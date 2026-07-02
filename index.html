@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Empire AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <h1>🎬 Empire AI</h1>
+
+    <p>Génère des idées de vidéos avec l'IA</p>
+
+    <input id="theme" placeholder="Ton thème (ex: gaming, fitness...)">
+
+    <button onclick="generate()">Générer</button>
+
+    <div id="result"></div>
+
+  </div>
+
+<script>
+async function generate() {
+  const theme = document.getElementById("theme").value;
+  const resultDiv = document.getElementById("result");
+
+  resultDiv.innerHTML = "Chargement...";
+
+  const res = await fetch("/api/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ theme })
+  });
+
+  const data = await res.json();
+
+  resultDiv.innerHTML = data.result || data.error;
+}
+</script>
+
+</body>
+</html>
