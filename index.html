@@ -1,46 +1,73 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Empire AI</title>
-  <link rel="stylesheet" href="style.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Empire AI</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-  <div class="container">
+<div class="app">
 
-    <h1>🎬 Empire AI</h1>
+    <aside class="sidebar">
 
-    <p>Génère des idées de vidéos avec l'IA</p>
+        <h2>👑 Empire AI</h2>
 
-    <input id="theme" placeholder="Ton thème (ex: gaming, fitness...)">
+        <button class="menu active">💡 Idées</button>
+        <button class="menu">📝 Scripts</button>
+        <button class="menu">🪝 Hooks</button>
+        <button class="menu">🎯 Titres</button>
+        <button class="menu">📄 Descriptions</button>
+        <button class="menu">📅 Calendrier</button>
 
-    <button onclick="generate()">Générer</button>
+    </aside>
 
-    <div id="result"></div>
+    <main class="content">
 
-  </div>
+        <header>
 
-<script>
-async function generate() {
-  const theme = document.getElementById("theme").value;
-  const resultDiv = document.getElementById("result");
+            <h1>Assistant Créateur</h1>
 
-  resultDiv.innerHTML = "Chargement...";
+            <p>
+                Décris ton idée et laisse Empire AI créer ton contenu.
+            </p>
 
-  const res = await fetch("/api/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ theme })
-  });
+        </header>
 
-  const data = await res.json();
+        <section class="generator">
 
-  resultDiv.innerHTML = data.result || data.error;
-}
-</script>
+            <textarea
+                id="theme"
+                placeholder="Exemple : Je fais une chaîne YouTube sur Minecraft. Donne-moi 10 idées originales."
+            ></textarea>
+
+            <button onclick="generate()">
+
+                🚀 Générer
+
+            </button>
+
+        </section>
+
+        <section id="result">
+
+            Les réponses de l'IA apparaîtront ici...
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
 
 </body>
+
 </html>
