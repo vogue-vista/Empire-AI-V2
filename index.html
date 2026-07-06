@@ -3,12 +3,12 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Empire AI</title>
+    <title>Empire AI</title>
 
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -20,12 +20,29 @@
 
         <h2>👑 Empire AI</h2>
 
-        <button class="menu active">💡 Idées</button>
-        <button class="menu">📝 Scripts</button>
-        <button class="menu">🪝 Hooks</button>
-        <button class="menu">🎯 Titres</button>
-        <button class="menu">📄 Descriptions</button>
-        <button class="menu">📅 Calendrier</button>
+        <button class="menu active" data-mode="ideas">
+            💡 Idées de vidéos
+        </button>
+
+        <button class="menu" data-mode="script">
+            📝 Scripts
+        </button>
+
+        <button class="menu" data-mode="hook">
+            🪝 Hooks
+        </button>
+
+        <button class="menu" data-mode="title">
+            🎯 Titres
+        </button>
+
+        <button class="menu" data-mode="description">
+            📄 Descriptions
+        </button>
+
+        <button class="menu" data-mode="calendar">
+            📅 Calendrier
+        </button>
 
     </aside>
 
@@ -33,10 +50,10 @@
 
         <header>
 
-            <h1>Assistant Créateur</h1>
+            <h1>Assistant Créateur IA</h1>
 
             <p>
-                Décris ton idée et laisse Empire AI créer ton contenu.
+                Choisis un outil à gauche, décris ton projet et Empire AI fera le reste.
             </p>
 
         </header>
@@ -45,20 +62,22 @@
 
             <textarea
                 id="theme"
-                placeholder="Exemple : Je fais une chaîne YouTube sur Minecraft. Donne-moi 10 idées originales."
+                placeholder="Exemple : Je crée une chaîne YouTube sur Minecraft. Donne-moi des idées originales..."
             ></textarea>
 
             <button onclick="generate()">
-
                 🚀 Générer
-
             </button>
 
         </section>
 
         <section id="result">
 
-            Les réponses de l'IA apparaîtront ici...
+            👋 Bienvenue sur Empire AI !
+
+            <br><br>
+
+            Sélectionne un outil dans le menu de gauche puis clique sur <b>Générer</b>.
 
         </section>
 
