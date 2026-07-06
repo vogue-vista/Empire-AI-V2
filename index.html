@@ -3,12 +3,12 @@
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Empire AI</title>
+<title>Empire AI</title>
 
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -44,16 +44,20 @@
             📅 Calendrier
         </button>
 
+        <button class="menu" data-mode="complete">
+            ⭐ Génération complète
+        </button>
+
     </aside>
 
     <main class="content">
 
         <header>
 
-            <h1>Assistant Créateur IA</h1>
+            <h1>Empire AI</h1>
 
             <p>
-                Choisis un outil à gauche, décris ton projet et Empire AI fera le reste.
+                Ton assistant IA pour créer du contenu YouTube, TikTok et Instagram.
             </p>
 
         </header>
@@ -61,11 +65,11 @@
         <section class="generator">
 
             <textarea
-                id="theme"
-                placeholder="Exemple : Je crée une chaîne YouTube sur Minecraft. Donne-moi des idées originales..."
+            id="theme"
+            placeholder="Exemple : Je crée une chaîne YouTube sur Minecraft destinée aux adolescents."
             ></textarea>
 
-            <button onclick="generate()">
+            <button id="generateBtn" onclick="generate()">
                 🚀 Générer
             </button>
 
@@ -73,11 +77,11 @@
 
         <section id="result">
 
-            👋 Bienvenue sur Empire AI !
+            👋 Bienvenue sur Empire AI.
 
             <br><br>
 
-            Sélectionne un outil dans le menu de gauche puis clique sur <b>Générer</b>.
+            Choisis un outil dans le menu de gauche puis clique sur <b>Générer</b>.
 
         </section>
 
