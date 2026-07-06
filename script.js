@@ -1,46 +1,60 @@
+let mode = "ideas";
+
+const menus = document.querySelectorAll(".menu");
+
+menus.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        menus.forEach(b => b.classList.remove("active"));
+
+        button.classList.add("active");
+
+        mode = button.dataset.mode;
+
+    });
+
+});
+
 async function generate() {
 
     const theme = document.getElementById("theme").value;
     const result = document.getElementById("result");
 
-    if (theme.trim() === "") {
-        result.innerHTML = "⚠️ Écris d'abord un sujet.";
+    if(theme.trim()==""){
+
+        result.innerHTML="⚠️ Écris un sujet.";
+
         return;
+
     }
 
-    result.innerHTML = "🤖 Empire AI réfléchit...";
+    result.innerHTML="🤖 Empire AI réfléchit...";
 
-    try {
+    try{
 
-        const response = await fetch("/api/generate", {
+        const response = await fetch("/api/generate",{
 
-            method: "POST",
+            method:"POST",
 
-            headers: {
-                "Content-Type": "application/json"
+            headers:{
+                "Content-Type":"application/json"
             },
 
-            body: JSON.stringify({
-                theme: theme
+            body:JSON.stringify({
+                theme,
+                mode
             })
 
         });
 
         const data = await response.json();
 
-        if (data.result) {
+        result.innerHTML=data.result || data.error;
 
-            result.innerHTML = data.result;
+    }catch(e){
 
-        } else {
-
-            result.innerHTML = "❌ " + (data.error || "Une erreur est survenue.");
-
-        }
-
-    } catch (error) {
-
-        result.innerHTML = "❌ Impossible de contacter l'IA.";
+        result.innerHTML="❌ Impossible de contacter l'IA.";
 
     }
 
