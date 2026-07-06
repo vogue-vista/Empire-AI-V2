@@ -10,88 +10,198 @@ export default async function handler(req, res) {
 
         const { theme, mode } = req.body;
 
+        if (!theme || theme.trim() === "") {
+            return res.status(400).json({
+                error: "Aucun sujet fourni."
+            });
+        }
+
         let prompt = "";
 
         switch (mode) {
 
             case "ideas":
+
                 prompt = `
 Tu es un expert YouTube.
 
-Donne 10 idées de vidéos originales sur le sujet suivant :
-
+Sujet :
 ${theme}
 
-Pour chaque idée ajoute une courte explication.
+Mission :
+
+- Génère 10 idées de vidéos originales.
+- Classe les meilleures en premier.
+- Explique en une phrase pourquoi chaque idée peut fonctionner.
+
+Répond uniquement en français.
 `;
+
                 break;
 
             case "script":
+
                 prompt = `
-Tu es un scénariste YouTube.
+Tu es un scénariste YouTube professionnel.
 
 Écris un script complet sur :
 
 ${theme}
 
-Le script doit contenir :
+Structure :
 
-- Hook
-- Introduction
-- Développement
-- Conclusion
-- Appel à l'action
+🪝 Hook
+
+🎬 Introduction
+
+📚 Développement
+
+🔥 Moment fort
+
+🎯 Conclusion
+
+📢 Appel à l'action
+
+Le script doit être naturel et captivant.
 `;
+
                 break;
 
             case "hook":
+
                 prompt = `
 Tu es expert en rétention d'audience.
 
-Crée 15 hooks ultra accrocheurs sur :
+Sujet :
 
 ${theme}
 
-Les hooks doivent donner envie de continuer la vidéo.
+Crée 15 hooks très puissants.
+
+Ils doivent immédiatement attirer l'attention.
+
+Chaque hook doit être différent.
 `;
+
                 break;
 
             case "title":
+
                 prompt = `
 Tu es expert SEO YouTube.
 
-Génère 20 titres extrêmement accrocheurs sur :
+Sujet :
 
 ${theme}
 
-Les titres doivent donner envie de cliquer.
+Crée 20 titres.
+
+Les titres doivent :
+
+- donner envie de cliquer
+- être courts
+- être modernes
+- être optimisés pour YouTube
+
+Numérote-les.
 `;
+
                 break;
 
             case "description":
+
                 prompt = `
-Écris une description YouTube professionnelle sur :
+Tu es expert YouTube.
+
+Sujet :
 
 ${theme}
 
-Ajoute :
+Crée :
+
+- une description professionnelle
+
+- un appel à l'action
+
+- des hashtags
 
 - des emojis
-- un appel à l'action
-- des hashtags
 `;
+
                 break;
 
             case "calendar":
-                prompt = `
-Tu es un coach créateur de contenu.
 
-Crée un calendrier de publication sur 30 jours concernant :
+                prompt = `
+Tu es coach YouTube.
+
+Sujet :
 
 ${theme}
 
-Présente le résultat sous forme de tableau.
+Prépare un calendrier de publication sur 30 jours.
+
+Pour chaque jour indique :
+
+Jour
+
+Titre de la vidéo
+
+Objectif
+
+Format
+
+Présente le résultat proprement.
 `;
+
+                break;
+
+            case "complete":
+
+                prompt = `
+Tu es le meilleur coach YouTube au monde.
+
+Sujet :
+
+${theme}
+
+Prépare un dossier complet.
+
+======================
+
+# 1. Dix idées de vidéos
+
+======================
+
+# 2. Vingt titres
+
+======================
+
+# 3. Quinze hooks
+
+======================
+
+# 4. Script complet
+
+======================
+
+# 5. Description YouTube
+
+======================
+
+# 6. Hashtags
+
+======================
+
+# 7. Calendrier de publication
+
+Tout doit être très professionnel.
+
+Utilise des emojis.
+
+Sépare bien chaque partie.
+`;
+
                 break;
 
             default:
@@ -103,35 +213,60 @@ Présente le résultat sous forme de tableau.
         const response = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",
             {
+
                 method: "POST",
 
                 headers: {
+
                     "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+
                     "Content-Type": "application/json"
+
                 },
 
                 body: JSON.stringify({
 
                     model: "llama-3.1-8b-instant",
 
+                    temperature: 0.8,
+
                     messages: [
+
                         {
+
+                            role: "system",
+
+                            content:
+                                "Tu es Empire AI, un assistant spécialisé dans la création de contenu YouTube, TikTok et Instagram."
+
+                        },
+
+                        {
+
                             role: "user",
+
                             content: prompt
+
                         }
+
                     ]
 
                 })
 
             }
+
         );
 
         const data = await response.json();
 
-        if (data.error) {
+        if (!response.ok) {
 
-            return res.status(500).json({
-                error: data.error.message
+            console.log(data);
+
+            return res.status(response.status).json({
+
+                error: data.error?.message || "Erreur API"
+
             });
 
         }
@@ -148,7 +283,7 @@ Présente le résultat sous forme de tableau.
 
         return res.status(500).json({
 
-            error: "Erreur IA"
+            error: "Erreur serveur"
 
         });
 
