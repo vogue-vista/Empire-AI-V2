@@ -8,13 +8,43 @@ export default async function handler(req, res) {
 
     try {
 
-        const { theme, mode } = req.body;
+        const {
+            theme,
+            platform,
+            audience,
+            goal,
+            duration,
+            style,
+            mode
+        } = req.body;
 
         if (!theme || theme.trim() === "") {
             return res.status(400).json({
-                error: "Aucun sujet fourni."
+                error: "Le sujet est obligatoire."
             });
         }
+
+        const context = `
+
+SUJET :
+${theme}
+
+PLATEFORME :
+${platform}
+
+PUBLIC CIBLE :
+${audience}
+
+OBJECTIF :
+${goal}
+
+DURÉE :
+${duration}
+
+STYLE :
+${style}
+
+`;
 
         let prompt = "";
 
@@ -23,18 +53,19 @@ export default async function handler(req, res) {
             case "ideas":
 
                 prompt = `
-Tu es un expert YouTube.
+Tu es un expert des réseaux sociaux.
 
-Sujet :
-${theme}
+${context}
 
-Mission :
+Donne 10 idées de vidéos.
 
-- Génère 10 idées de vidéos originales.
-- Classe les meilleures en premier.
-- Explique en une phrase pourquoi chaque idée peut fonctionner.
+Pour chaque idée :
 
-Répond uniquement en français.
+- Titre
+- Pourquoi elle peut fonctionner
+- Niveau de viralité (/10)
+
+Répond en français.
 `;
 
                 break;
@@ -42,19 +73,19 @@ Répond uniquement en français.
             case "script":
 
                 prompt = `
-Tu es un scénariste YouTube professionnel.
+Tu es un scénariste professionnel.
 
-Écris un script complet sur :
+${context}
 
-${theme}
+Écris un script complet.
 
-Structure :
+Le script doit contenir :
 
 🪝 Hook
 
 🎬 Introduction
 
-📚 Développement
+📖 Développement
 
 🔥 Moment fort
 
@@ -62,7 +93,11 @@ Structure :
 
 📢 Appel à l'action
 
-Le script doit être naturel et captivant.
+Ajoute également :
+
+🎥 Les plans de caméra.
+
+Sois naturel.
 `;
 
                 break;
@@ -72,15 +107,13 @@ Le script doit être naturel et captivant.
                 prompt = `
 Tu es expert en rétention d'audience.
 
-Sujet :
+${context}
 
-${theme}
+Crée 20 hooks extrêmement puissants.
 
-Crée 15 hooks très puissants.
+Ils doivent donner envie de regarder la vidéo.
 
-Ils doivent immédiatement attirer l'attention.
-
-Chaque hook doit être différent.
+Répond en français.
 `;
 
                 break;
@@ -88,20 +121,18 @@ Chaque hook doit être différent.
             case "title":
 
                 prompt = `
-Tu es expert SEO YouTube.
+Tu es expert SEO.
 
-Sujet :
-
-${theme}
+${context}
 
 Crée 20 titres.
 
-Les titres doivent :
+Les titres doivent être :
 
-- donner envie de cliquer
-- être courts
-- être modernes
-- être optimisés pour YouTube
+- modernes
+- courts
+- très cliquables
+- optimisés pour ${platform}
 
 Numérote-les.
 `;
@@ -113,45 +144,45 @@ Numérote-les.
                 prompt = `
 Tu es expert YouTube.
 
-Sujet :
-
-${theme}
+${context}
 
 Crée :
 
-- une description professionnelle
+📄 Une description optimisée.
 
-- un appel à l'action
+🏷 Des hashtags.
 
-- des hashtags
+📢 Un appel à l'action.
 
-- des emojis
+😊 Quelques emojis.
+
+Répond en français.
 `;
 
                 break;
 
-            case "calendar":
+            case "planner":
 
                 prompt = `
-Tu es coach YouTube.
+Tu es coach en création de contenu.
 
-Sujet :
-
-${theme}
+${context}
 
 Prépare un calendrier de publication sur 30 jours.
 
-Pour chaque jour indique :
+Pour chaque publication indique :
 
-Jour
+📅 Jour
 
-Titre de la vidéo
+🎬 Sujet
 
-Objectif
+🎯 Objectif
 
-Format
+🕒 Heure idéale
 
-Présente le résultat proprement.
+🎥 Type de contenu
+
+Présente le résultat sous forme de tableau.
 `;
 
                 break;
@@ -159,54 +190,62 @@ Présente le résultat proprement.
             case "complete":
 
                 prompt = `
-Tu es le meilleur coach YouTube au monde.
+Tu es Empire AI.
 
-Sujet :
-
-${theme}
+${context}
 
 Prépare un dossier complet.
 
-======================
+=========================
 
-# 1. Dix idées de vidéos
+1️⃣ 10 idées de vidéos
 
-======================
+=========================
 
-# 2. Vingt titres
+2️⃣ 20 titres
 
-======================
+=========================
 
-# 3. Quinze hooks
+3️⃣ 20 hooks
 
-======================
+=========================
 
-# 4. Script complet
+4️⃣ Script complet
 
-======================
+=========================
 
-# 5. Description YouTube
+5️⃣ Plans de caméra
 
-======================
+=========================
 
-# 6. Hashtags
+6️⃣ Description optimisée
 
-======================
+=========================
 
-# 7. Calendrier de publication
+7️⃣ Hashtags
+
+=========================
+
+8️⃣ Calendrier de publication
+
+=========================
 
 Tout doit être très professionnel.
 
 Utilise des emojis.
 
-Sépare bien chaque partie.
+Sépare clairement chaque section.
 `;
 
                 break;
 
             default:
 
-                prompt = theme;
+                prompt = `
+${context}
+
+Aide le créateur de contenu.
+`;
 
         }
 
@@ -218,7 +257,7 @@ Sépare bien chaque partie.
 
                 headers: {
 
-                    "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+                    Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
 
                     "Content-Type": "application/json"
 
@@ -230,23 +269,19 @@ Sépare bien chaque partie.
 
                     temperature: 0.8,
 
+                    max_tokens: 3000,
+
                     messages: [
 
                         {
-
                             role: "system",
-
                             content:
-                                "Tu es Empire AI, un assistant spécialisé dans la création de contenu YouTube, TikTok et Instagram."
-
+                                "Tu es Empire AI, un assistant professionnel spécialisé dans la création de contenu YouTube, TikTok, Instagram et les réseaux sociaux."
                         },
 
                         {
-
                             role: "user",
-
                             content: prompt
-
                         }
 
                     ]
@@ -265,7 +300,7 @@ Sépare bien chaque partie.
 
             return res.status(response.status).json({
 
-                error: data.error?.message || "Erreur API"
+                error: data.error?.message || "Erreur de l'API."
 
             });
 
@@ -277,13 +312,13 @@ Sépare bien chaque partie.
 
         });
 
-    } catch (err) {
+    } catch (error) {
 
-        console.log(err);
+        console.error(error);
 
         return res.status(500).json({
 
-            error: "Erreur serveur"
+            error: "Impossible de contacter l'IA."
 
         });
 
