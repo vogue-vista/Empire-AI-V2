@@ -1,16 +1,16 @@
-let mode = "ideas";
+let currentMode = "ideas";
 
-const menus = document.querySelectorAll(".menu");
+const menuButtons = document.querySelectorAll(".menu");
 
-menus.forEach(button => {
+menuButtons.forEach(button => {
 
     button.addEventListener("click", () => {
 
-        menus.forEach(b => b.classList.remove("active"));
+        menuButtons.forEach(btn => btn.classList.remove("active"));
 
         button.classList.add("active");
 
-        mode = button.dataset.mode;
+        currentMode = button.dataset.mode;
 
     });
 
@@ -18,18 +18,35 @@ menus.forEach(button => {
 
 async function generate() {
 
-    const theme = document.getElementById("theme").value;
+    const theme = document.getElementById("theme").value.trim();
+
+    const platform = document.getElementById("platform").value;
+
+    const audience = document.getElementById("audience").value;
+
+    const goal = document.getElementById("goal").value;
+
+    const duration = document.getElementById("duration").value;
+
+    const style = document.getElementById("style").value;
+
     const result = document.getElementById("result");
 
-    if(theme.trim()==""){
+    const button = document.getElementById("generateBtn");
 
-        result.innerHTML="⚠️ Écris un sujet.";
+    if(theme === ""){
+
+        alert("Entre un sujet.");
 
         return;
 
     }
 
-    result.innerHTML="🤖 Empire AI réfléchit...";
+    button.disabled = true;
+
+    button.innerHTML = "⏳ Génération...";
+
+    result.innerHTML = "L'IA travaille...";
 
     try{
 
@@ -42,20 +59,85 @@ async function generate() {
             },
 
             body:JSON.stringify({
+
                 theme,
-                mode
+
+                platform,
+
+                audience,
+
+                goal,
+
+                duration,
+
+                style,
+
+                mode:currentMode
+
             })
 
         });
 
         const data = await response.json();
 
-        result.innerHTML=data.result || data.error;
+        if(data.error){
 
-    }catch(e){
+            result.innerHTML = "❌ " + data.error;
 
-        result.innerHTML="❌ Impossible de contacter l'IA.";
+        }else{
+
+            result.innerHTML = data.result;
+
+        }
+
+    }catch(error){
+
+        result.innerHTML = "Impossible de contacter l'IA.";
 
     }
 
+    button.disabled = false;
+
+    button.innerHTML = "🚀 Générer";
+
 }
+
+/* ========================= */
+/* COPIER */
+/* ========================= */
+
+document.getElementById("copyBtn").addEventListener("click",()=>{
+
+    const text = document.getElementById("result").innerText;
+
+    navigator.clipboard.writeText(text);
+
+    alert("Texte copié !");
+
+});
+
+/* ========================= */
+/* EFFACER */
+/* ========================= */
+
+document.getElementById("clearBtn").addEventListener("click",()=>{
+
+    document.getElementById("result").innerHTML="";
+
+});
+
+/* ========================= */
+/* RACCOURCI CLAVIER */
+/* ========================= */
+
+document.getElementById("theme").addEventListener("keydown",(e)=>{
+
+    if(e.key==="Enter"){
+
+        e.preventDefault();
+
+        generate();
+
+    }
+
+});
