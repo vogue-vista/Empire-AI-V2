@@ -2,86 +2,279 @@
 <html lang="fr">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire AI V2</title>
 
-<title>Empire AI</title>
-
-<link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="app">
 
+    <!-- ========================= -->
+    <!-- SIDEBAR -->
+    <!-- ========================= -->
+
     <aside class="sidebar">
 
-        <h2>👑 Empire AI</h2>
+        <div class="logo">
 
-        <button class="menu active" data-mode="ideas">
-            💡 Idées de vidéos
-        </button>
+            <h1>👑 Empire AI</h1>
 
-        <button class="menu" data-mode="script">
-            📝 Scripts
-        </button>
+            <p>Version 2</p>
 
-        <button class="menu" data-mode="hook">
-            🪝 Hooks
-        </button>
+        </div>
 
-        <button class="menu" data-mode="title">
-            🎯 Titres
-        </button>
+        <nav>
 
-        <button class="menu" data-mode="description">
-            📄 Descriptions
-        </button>
+            <button class="menu active" data-mode="ideas">
+                💡 Idées
+            </button>
 
-        <button class="menu" data-mode="calendar">
-            📅 Calendrier
-        </button>
+            <button class="menu" data-mode="script">
+                📝 Script
+            </button>
 
-        <button class="menu" data-mode="complete">
-            ⭐ Génération complète
-        </button>
+            <button class="menu" data-mode="hook">
+                🪝 Hooks
+            </button>
+
+            <button class="menu" data-mode="title">
+                🎯 Titres
+            </button>
+
+            <button class="menu" data-mode="description">
+                📄 Description
+            </button>
+
+            <button class="menu" data-mode="planner">
+                📅 Planificateur IA
+            </button>
+
+            <button class="menu premium" data-mode="complete">
+                ⭐ Génération complète
+            </button>
+
+        </nav>
 
     </aside>
 
+    <!-- ========================= -->
+    <!-- CONTENU -->
+    <!-- ========================= -->
+
     <main class="content">
 
-        <header>
+        <header class="header">
 
-            <h1>Empire AI</h1>
+            <div>
 
-            <p>
-                Ton assistant IA pour créer du contenu YouTube, TikTok et Instagram.
-            </p>
+                <h2>Créer un projet</h2>
+
+                <p>
+                    Remplis les informations puis laisse Empire AI créer ton contenu.
+                </p>
+
+            </div>
 
         </header>
 
-        <section class="generator">
+        <!-- ========================= -->
+        <!-- FORMULAIRE -->
+        <!-- ========================= -->
 
-            <textarea
-            id="theme"
-            placeholder="Exemple : Je crée une chaîne YouTube sur Minecraft destinée aux adolescents."
-            ></textarea>
+        <section class="card">
 
-            <button id="generateBtn" onclick="generate()">
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>Sujet</label>
+
+                    <input
+                        id="theme"
+                        type="text"
+                        placeholder="Ex : Minecraft Hardcore"
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label>Plateforme</label>
+
+                    <select id="platform">
+
+                        <option>YouTube</option>
+
+                        <option>TikTok</option>
+
+                        <option>Instagram</option>
+
+                        <option>YouTube Shorts</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label>Public cible</label>
+
+                    <select id="audience">
+
+                        <option>8-12 ans</option>
+
+                        <option selected>13-17 ans</option>
+
+                        <option>18-24 ans</option>
+
+                        <option>25-34 ans</option>
+
+                        <option>35 ans et +</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label>Objectif</label>
+
+                    <select id="goal">
+
+                        <option>Plus de vues</option>
+
+                        <option>Plus d'abonnés</option>
+
+                        <option>Plus de commentaires</option>
+
+                        <option>Plus de partages</option>
+
+                        <option>Plus de ventes</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label>Durée</label>
+
+                    <select id="duration">
+
+                        <option>30 secondes</option>
+
+                        <option>1 minute</option>
+
+                        <option>5 minutes</option>
+
+                        <option selected>10 minutes</option>
+
+                        <option>20 minutes</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label>Style</label>
+
+                    <select id="style">
+
+                        <option>Divertissant</option>
+
+                        <option>Professionnel</option>
+
+                        <option>Éducatif</option>
+
+                        <option>Motivant</option>
+
+                        <option>Viral</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <button
+                id="generateBtn"
+                class="generate"
+                onclick="generate()"
+            >
                 🚀 Générer
             </button>
 
         </section>
 
-        <section id="result">
+        <!-- ========================= -->
+        <!-- RESULTAT -->
+        <!-- ========================= -->
 
-            👋 Bienvenue sur Empire AI.
+        <section class="result-card">
 
-            <br><br>
+            <div class="result-header">
 
-            Choisis un outil dans le menu de gauche puis clique sur <b>Générer</b>.
+                <h3>Résultat</h3>
+
+                <div>
+
+                    <button id="copyBtn">
+                        📋 Copier
+                    </button>
+
+                    <button id="clearBtn">
+                        🗑️ Effacer
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="result">
+
+                <h2>👋 Bienvenue sur Empire AI</h2>
+
+                <p>
+
+                    Choisis un outil dans le menu de gauche.
+
+                </p>
+
+                <p>
+
+                    Remplis les informations.
+
+                </p>
+
+                <p>
+
+                    Clique sur <strong>🚀 Générer</strong>.
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- ========================= -->
+        <!-- PLANIFICATEUR -->
+        <!-- ========================= -->
+
+        <section class="planner">
+
+            <h3>📅 Planificateur IA</h3>
+
+            <p>
+
+                Cette section affichera bientôt un vrai calendrier interactif.
+
+            </p>
 
         </section>
 
