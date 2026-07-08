@@ -1,3 +1,5 @@
+// Remplace entièrement ton fichier script.js
+
 let currentMode = "ideas";
 
 const menuButtons = document.querySelectorAll(".menu");
@@ -34,7 +36,7 @@ async function generate() {
 
     const button = document.getElementById("generateBtn");
 
-    if(theme === ""){
+    if(theme===""){
 
         alert("Entre un sujet.");
 
@@ -42,15 +44,15 @@ async function generate() {
 
     }
 
-    button.disabled = true;
+    button.disabled=true;
 
-    button.innerHTML = "⏳ Génération...";
+    button.innerHTML="⏳ Génération...";
 
-    result.innerHTML = "L'IA travaille...";
+    result.innerHTML="L'IA travaille...";
 
     try{
 
-        const response = await fetch("/api/generate",{
+        const response=await fetch("/api/generate",{
 
             method:"POST",
 
@@ -78,47 +80,99 @@ async function generate() {
 
         });
 
-        const data = await response.json();
+        const data=await response.json();
 
         if(data.error){
 
-            result.innerHTML = "❌ " + data.error;
-
-        }else{
-
-            result.innerHTML = data.result;
+            result.innerHTML="❌ "+data.error;
 
         }
 
-    }catch(error){
+        else{
 
-        result.innerHTML = "Impossible de contacter l'IA.";
+            if(currentMode==="planner"){
+
+                afficherCalendrier(data.result);
+
+            }
+
+            else{
+
+                result.innerHTML=data.result;
+
+            }
+
+        }
 
     }
 
-    button.disabled = false;
+    catch{
 
-    button.innerHTML = "🚀 Générer";
+        result.innerHTML="Impossible de contacter l'IA.";
+
+    }
+
+    button.disabled=false;
+
+    button.innerHTML="🚀 Générer";
 
 }
 
-/* ========================= */
+/*==============================*/
+/* CALENDRIER */
+/*==============================*/
+
+function afficherCalendrier(texte){
+
+    const result=document.getElementById("result");
+
+    const lignes=texte.split("\n").filter(l=>l.trim()!="");
+
+    let html="";
+
+    html+="<h2>📅 Planificateur IA</h2>";
+
+    html+="<div class='calendar'>";
+
+    lignes.forEach(ligne=>{
+
+        html+=`
+
+        <div class="day">
+
+            ${ligne}
+
+        </div>
+
+        `;
+
+    });
+
+    html+="</div>";
+
+    result.innerHTML=html;
+
+}
+
+/*==============================*/
 /* COPIER */
-/* ========================= */
+/*==============================*/
 
 document.getElementById("copyBtn").addEventListener("click",()=>{
 
-    const text = document.getElementById("result").innerText;
+    navigator.clipboard.writeText(
 
-    navigator.clipboard.writeText(text);
+        document.getElementById("result").innerText
 
-    alert("Texte copié !");
+    );
+
+    alert("Copié !");
 
 });
 
-/* ========================= */
+/*==============================*/
 /* EFFACER */
-/* ========================= */
+/*==============================*/
 
 document.getElementById("clearBtn").addEventListener("click",()=>{
 
@@ -126,9 +180,9 @@ document.getElementById("clearBtn").addEventListener("click",()=>{
 
 });
 
-/* ========================= */
-/* RACCOURCI CLAVIER */
-/* ========================= */
+/*==============================*/
+/* ENTREE */
+/*==============================*/
 
 document.getElementById("theme").addEventListener("keydown",(e)=>{
 
