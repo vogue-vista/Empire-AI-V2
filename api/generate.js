@@ -59,11 +59,11 @@ ${context}
 
 Donne 10 idées de vidéos.
 
-Pour chaque idée :
+Pour chaque idée indique :
 
 - Titre
 - Pourquoi elle peut fonctionner
-- Niveau de viralité (/10)
+- Niveau de viralité sur 10
 
 Répond en français.
 `;
@@ -79,7 +79,7 @@ ${context}
 
 Écris un script complet.
 
-Le script doit contenir :
+Structure :
 
 🪝 Hook
 
@@ -93,11 +93,9 @@ Le script doit contenir :
 
 📢 Appel à l'action
 
-Ajoute également :
+Ajoute également les plans de caméra.
 
-🎥 Les plans de caméra.
-
-Sois naturel.
+Répond uniquement en français.
 `;
 
                 break;
@@ -109,11 +107,9 @@ Tu es expert en rétention d'audience.
 
 ${context}
 
-Crée 20 hooks extrêmement puissants.
+Crée 20 hooks très puissants.
 
-Ils doivent donner envie de regarder la vidéo.
-
-Répond en français.
+Répond uniquement en français.
 `;
 
                 break;
@@ -125,16 +121,9 @@ Tu es expert SEO.
 
 ${context}
 
-Crée 20 titres.
+Crée 20 titres optimisés.
 
-Les titres doivent être :
-
-- modernes
-- courts
-- très cliquables
-- optimisés pour ${platform}
-
-Numérote-les.
+Répond uniquement en français.
 `;
 
                 break;
@@ -148,15 +137,15 @@ ${context}
 
 Crée :
 
-📄 Une description optimisée.
+Une description.
 
-🏷 Des hashtags.
+Des hashtags.
 
-📢 Un appel à l'action.
+Un appel à l'action.
 
-😊 Quelques emojis.
+Des emojis.
 
-Répond en français.
+Répond uniquement en français.
 `;
 
                 break;
@@ -164,25 +153,39 @@ Répond en français.
             case "planner":
 
                 prompt = `
-Tu es coach en création de contenu.
+Tu es un expert YouTube.
 
 ${context}
 
-Prépare un calendrier de publication sur 30 jours.
+Crée un calendrier de contenu sur 30 jours.
 
-Pour chaque publication indique :
+IMPORTANT :
 
-📅 Jour
+Chaque ligne doit respecter EXACTEMENT ce format.
 
-🎬 Sujet
+Jour 1 | Titre | Heure | Objectif
 
-🎯 Objectif
+Jour 2 | Titre | Heure | Objectif
 
-🕒 Heure idéale
+Jour 3 | Titre | Heure | Objectif
 
-🎥 Type de contenu
+...
 
-Présente le résultat sous forme de tableau.
+Jour 30 | Titre | Heure | Objectif
+
+Exemple :
+
+Jour 1 | Survivre 100 jours sur Minecraft Hardcore | 18:00 | Plus de vues
+
+Jour 2 | Le plus gros piège Minecraft | 17:00 | Plus d'abonnés
+
+Jour 3 | Les 10 erreurs des débutants | 19:00 | Plus de vues
+
+Ne fais PAS de tableau.
+
+Ne fais PAS de markdown.
+
+Une ligne = une journée.
 `;
 
                 break;
@@ -194,65 +197,40 @@ Tu es Empire AI.
 
 ${context}
 
-Prépare un dossier complet.
+Prépare un dossier complet contenant :
 
-=========================
+1. Dix idées
 
-1️⃣ 10 idées de vidéos
+2. Vingt titres
 
-=========================
+3. Vingt hooks
 
-2️⃣ 20 titres
+4. Un script complet
 
-=========================
+5. Les plans de caméra
 
-3️⃣ 20 hooks
+6. Une description
 
-=========================
+7. Les hashtags
 
-4️⃣ Script complet
-
-=========================
-
-5️⃣ Plans de caméra
-
-=========================
-
-6️⃣ Description optimisée
-
-=========================
-
-7️⃣ Hashtags
-
-=========================
-
-8️⃣ Calendrier de publication
-
-=========================
-
-Tout doit être très professionnel.
+8. Un calendrier de publication
 
 Utilise des emojis.
 
-Sépare clairement chaque section.
+Sépare clairement chaque partie.
 `;
 
                 break;
 
             default:
 
-                prompt = `
-${context}
-
-Aide le créateur de contenu.
-`;
+                prompt = context;
 
         }
 
         const response = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",
             {
-
                 method: "POST",
 
                 headers: {
@@ -276,7 +254,7 @@ Aide le créateur de contenu.
                         {
                             role: "system",
                             content:
-                                "Tu es Empire AI, un assistant professionnel spécialisé dans la création de contenu YouTube, TikTok, Instagram et les réseaux sociaux."
+                                "Tu es Empire AI, expert en création de contenu."
                         },
 
                         {
@@ -290,9 +268,7 @@ Aide le créateur de contenu.
 
             }
 
-        );
-
-        const data = await response.json();
+        );        const data = await response.json();
 
         if (!response.ok) {
 
@@ -306,19 +282,35 @@ Aide le créateur de contenu.
 
         }
 
+        if (
+            !data.choices ||
+            !data.choices[0] ||
+            !data.choices[0].message
+        ) {
+
+            return res.status(500).json({
+
+                error: "Réponse invalide de l'IA."
+
+            });
+
+        }
+
         return res.status(200).json({
 
             result: data.choices[0].message.content
 
         });
 
-    } catch (error) {
+    }
+
+    catch(error){
 
         console.error(error);
 
         return res.status(500).json({
 
-            error: "Impossible de contacter l'IA."
+            error:"Impossible de contacter l'IA."
 
         });
 
