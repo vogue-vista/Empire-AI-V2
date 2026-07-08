@@ -1,5 +1,3 @@
-// Remplace entièrement ton fichier script.js
-
 let currentMode = "ideas";
 
 const menuButtons = document.querySelectorAll(".menu");
@@ -18,25 +16,25 @@ menuButtons.forEach(button => {
 
 });
 
-async function generate() {
+async function generate(){
 
-    const theme = document.getElementById("theme").value.trim();
+    const theme=document.getElementById("theme").value.trim();
 
-    const platform = document.getElementById("platform").value;
+    const platform=document.getElementById("platform").value;
 
-    const audience = document.getElementById("audience").value;
+    const audience=document.getElementById("audience").value;
 
-    const goal = document.getElementById("goal").value;
+    const goal=document.getElementById("goal").value;
 
-    const duration = document.getElementById("duration").value;
+    const duration=document.getElementById("duration").value;
 
-    const style = document.getElementById("style").value;
+    const style=document.getElementById("style").value;
 
-    const result = document.getElementById("result");
+    const result=document.getElementById("result");
 
-    const button = document.getElementById("generateBtn");
+    const button=document.getElementById("generateBtn");
 
-    if(theme===""){
+    if(theme==""){
 
         alert("Entre un sujet.");
 
@@ -92,7 +90,17 @@ async function generate() {
 
             if(currentMode==="planner"){
 
-                afficherCalendrier(data.result);
+                try{
+
+                    afficherCalendrier(JSON.parse(data.result));
+
+                }
+
+                catch{
+
+                    result.innerHTML="Le calendrier n'a pas pu être généré.";
+
+                }
 
             }
 
@@ -116,31 +124,33 @@ async function generate() {
 
     button.innerHTML="🚀 Générer";
 
-}
-
-/*==============================*/
+}/* ========================================================= */
 /* CALENDRIER */
-/*==============================*/
+/* ========================================================= */
 
-function afficherCalendrier(texte){
+function afficherCalendrier(calendrier){
 
     const result=document.getElementById("result");
 
-    const lignes=texte.split("\n").filter(l=>l.trim()!="");
-
     let html="";
 
-    html+="<h2>📅 Planificateur IA</h2>";
+    html+="<h2>📅 Calendrier de publication</h2>";
 
     html+="<div class='calendar'>";
 
-    lignes.forEach(ligne=>{
+    calendrier.forEach(jour=>{
 
         html+=`
 
-        <div class="day">
+        <div class="day" onclick="ouvrirJour(${jour.jour})">
 
-            ${ligne}
+            <h3>📅 Jour ${jour.jour}</h3>
+
+            <p class="titre">
+
+                ${jour.titre}
+
+            </p>
 
         </div>
 
@@ -154,9 +164,37 @@ function afficherCalendrier(texte){
 
 }
 
-/*==============================*/
+/* ========================================================= */
+/* OUVRIR UNE JOURNÉE */
+/* ========================================================= */
+
+function ouvrirJour(jour){
+
+    alert(
+
+`📅 Jour ${jour}
+
+Dans Empire AI V2.1 :
+
+• Script complet
+
+• Hook
+
+• Description
+
+• Hashtags
+
+• Plans de caméra
+
+seront générés automatiquement.`
+
+    );
+
+}
+
+/* ========================================================= */
 /* COPIER */
-/*==============================*/
+/* ========================================================= */
 
 document.getElementById("copyBtn").addEventListener("click",()=>{
 
@@ -166,13 +204,13 @@ document.getElementById("copyBtn").addEventListener("click",()=>{
 
     );
 
-    alert("Copié !");
+    alert("Texte copié.");
 
 });
 
-/*==============================*/
+/* ========================================================= */
 /* EFFACER */
-/*==============================*/
+/* ========================================================= */
 
 document.getElementById("clearBtn").addEventListener("click",()=>{
 
@@ -180,9 +218,9 @@ document.getElementById("clearBtn").addEventListener("click",()=>{
 
 });
 
-/*==============================*/
-/* ENTREE */
-/*==============================*/
+/* ========================================================= */
+/* TOUCHE ENTRÉE */
+/* ========================================================= */
 
 document.getElementById("theme").addEventListener("keydown",(e)=>{
 
