@@ -1,48 +1,58 @@
 export default async function handler(req, res) {
 
     if (req.method !== "POST") {
+
         return res.status(405).json({
+
             error: "Méthode non autorisée."
+
         });
+
     }
 
     try {
 
         const {
+
             theme,
+
             platform,
+
             audience,
+
             goal,
+
             duration,
+
             style,
+
             mode
+
         } = req.body;
 
         if (!theme || theme.trim() === "") {
+
             return res.status(400).json({
+
                 error: "Le sujet est obligatoire."
+
             });
+
         }
 
         const context = `
 
-SUJET :
-${theme}
+Sujet : ${theme}
 
-PLATEFORME :
-${platform}
+Plateforme : ${platform}
 
-PUBLIC CIBLE :
-${audience}
+Public cible : ${audience}
 
-OBJECTIF :
-${goal}
+Objectif : ${goal}
 
-DURÉE :
-${duration}
+Durée : ${duration}
 
-STYLE :
-${style}
+Style : ${style}
 
 `;
 
@@ -53,6 +63,7 @@ ${style}
             case "ideas":
 
                 prompt = `
+
 Tu es un expert des réseaux sociaux.
 
 ${context}
@@ -61,11 +72,12 @@ Donne 10 idées de vidéos.
 
 Pour chaque idée indique :
 
-- Titre
-- Pourquoi elle peut fonctionner
-- Niveau de viralité sur 10
+- Un titre
+- Pourquoi elle peut devenir virale
+- Une note sur 10
 
-Répond en français.
+Répond uniquement en français.
+
 `;
 
                 break;
@@ -73,6 +85,7 @@ Répond en français.
             case "script":
 
                 prompt = `
+
 Tu es un scénariste professionnel.
 
 ${context}
@@ -93,9 +106,10 @@ Structure :
 
 📢 Appel à l'action
 
-Ajoute également les plans de caméra.
+Ajoute aussi des plans de caméra.
 
 Répond uniquement en français.
+
 `;
 
                 break;
@@ -103,13 +117,15 @@ Répond uniquement en français.
             case "hook":
 
                 prompt = `
-Tu es expert en rétention d'audience.
+
+Tu es un expert YouTube.
 
 ${context}
 
 Crée 20 hooks très puissants.
 
 Répond uniquement en français.
+
 `;
 
                 break;
@@ -117,13 +133,15 @@ Répond uniquement en français.
             case "title":
 
                 prompt = `
-Tu es expert SEO.
+
+Tu es un expert SEO.
 
 ${context}
 
-Crée 20 titres optimisés.
+Crée 20 titres très cliquables.
 
 Répond uniquement en français.
+
 `;
 
                 break;
@@ -131,21 +149,21 @@ Répond uniquement en français.
             case "description":
 
                 prompt = `
-Tu es expert YouTube.
+
+Tu es un expert YouTube.
 
 ${context}
 
 Crée :
 
-Une description.
+- une description optimisée
 
-Des hashtags.
+- une liste de hashtags
 
-Un appel à l'action.
-
-Des emojis.
+- un appel à l'action
 
 Répond uniquement en français.
+
 `;
 
                 break;
@@ -153,39 +171,38 @@ Répond uniquement en français.
             case "planner":
 
                 prompt = `
-Tu es un expert YouTube.
+
+Tu es une API.
+
+Tu dois répondre UNIQUEMENT avec un JSON valide.
+
+Tu ne dois écrire AUCUNE explication.
+
+Tu ne dois PAS écrire de markdown.
+
+Tu ne dois PAS écrire de texte avant ou après.
+
+Le format attendu est exactement :
+
+[
+{
+"jour":1,
+"titre":"...",
+"heure":"18:00",
+"objectif":"..."
+}
+]
+
+Crée exactement 30 objets.
+
+Chaque objet représente une journée.
+
+Les titres doivent être variés.
+
+Utilise les informations suivantes :
 
 ${context}
 
-Crée un calendrier de contenu sur 30 jours.
-
-IMPORTANT :
-
-Chaque ligne doit respecter EXACTEMENT ce format.
-
-Jour 1 | Titre | Heure | Objectif
-
-Jour 2 | Titre | Heure | Objectif
-
-Jour 3 | Titre | Heure | Objectif
-
-...
-
-Jour 30 | Titre | Heure | Objectif
-
-Exemple :
-
-Jour 1 | Survivre 100 jours sur Minecraft Hardcore | 18:00 | Plus de vues
-
-Jour 2 | Le plus gros piège Minecraft | 17:00 | Plus d'abonnés
-
-Jour 3 | Les 10 erreurs des débutants | 19:00 | Plus de vues
-
-Ne fais PAS de tableau.
-
-Ne fais PAS de markdown.
-
-Une ligne = une journée.
 `;
 
                 break;
@@ -193,11 +210,12 @@ Une ligne = une journée.
             case "complete":
 
                 prompt = `
+
 Tu es Empire AI.
 
 ${context}
 
-Prépare un dossier complet contenant :
+Prépare :
 
 1. Dix idées
 
@@ -205,7 +223,7 @@ Prépare un dossier complet contenant :
 
 3. Vingt hooks
 
-4. Un script complet
+4. Un script
 
 5. Les plans de caméra
 
@@ -213,11 +231,10 @@ Prépare un dossier complet contenant :
 
 7. Les hashtags
 
-8. Un calendrier de publication
+8. Un calendrier
 
-Utilise des emojis.
+Répond uniquement en français.
 
-Sépare clairement chaque partie.
 `;
 
                 break;
@@ -229,8 +246,11 @@ Sépare clairement chaque partie.
         }
 
         const response = await fetch(
+
             "https://api.groq.com/openai/v1/chat/completions",
+
             {
+
                 method: "POST",
 
                 headers: {
@@ -245,21 +265,28 @@ Sépare clairement chaque partie.
 
                     model: "llama-3.1-8b-instant",
 
-                    temperature: 0.8,
+                    temperature: 0.7,
 
                     max_tokens: 3000,
 
                     messages: [
 
                         {
+
                             role: "system",
+
                             content:
-                                "Tu es Empire AI, expert en création de contenu."
+
+                            "Tu es Empire AI, un assistant spécialisé dans la création de contenu."
+
                         },
 
                         {
+
                             role: "user",
+
                             content: prompt
+
                         }
 
                     ]
@@ -272,7 +299,7 @@ Sépare clairement chaque partie.
 
         if (!response.ok) {
 
-            console.log(data);
+            console.error(data);
 
             return res.status(response.status).json({
 
@@ -296,21 +323,50 @@ Sépare clairement chaque partie.
 
         }
 
+        let result = data.choices[0].message.content;
+
+        /* ==========================================
+           Nettoyage de la réponse JSON
+        ========================================== */
+
+        if (mode === "planner") {
+
+            result = result.trim();
+
+            if (result.startsWith("```json")) {
+
+                result = result
+                    .replace("```json", "")
+                    .replace("```", "")
+                    .trim();
+
+            }
+
+            else if (result.startsWith("```")) {
+
+                result = result
+                    .replace(/```/g, "")
+                    .trim();
+
+            }
+
+        }
+
         return res.status(200).json({
 
-            result: data.choices[0].message.content
+            result
 
         });
 
     }
 
-    catch(error){
+    catch (error) {
 
         console.error(error);
 
         return res.status(500).json({
 
-            error:"Impossible de contacter l'IA."
+            error: "Impossible de contacter l'IA."
 
         });
 
