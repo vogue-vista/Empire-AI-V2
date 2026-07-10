@@ -18,8 +18,7 @@ document.getElementById("unlockBtn").addEventListener("click", () => {
     const errorMsg = document.getElementById("errorMsg");
 
     if(validCodes.includes(code)){
-        // Redirection vers ton app
-        window.location.href = "index.html";
+        window.location.href = "app.html";
     } else {
         errorMsg.textContent = "❌ Code invalide. Vérifie ton accès.";
     }
