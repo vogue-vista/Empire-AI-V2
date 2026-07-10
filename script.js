@@ -1,211 +1,173 @@
-let currentMode = "ideas";
+/* ========================================================= */
+/* MODE ACTIF */
+/* ========================================================= */
 
+let currentMode = "planner";
+let calendrierData = [];
+
+/* Boutons du menu */
 const menuButtons = document.querySelectorAll(".menu");
 
 menuButtons.forEach(button => {
-
     button.addEventListener("click", () => {
 
         menuButtons.forEach(btn => btn.classList.remove("active"));
-
         button.classList.add("active");
 
         currentMode = button.dataset.mode;
-
     });
-
 });
+
+/* ========================================================= */
+/* GENERATION IA */
+/* ========================================================= */
 
 async function generate(){
 
-    const theme=document.getElementById("theme").value.trim();
+    const theme = document.getElementById("theme").value.trim();
+    const platform = document.getElementById("platform").value;
+    const audience = document.getElementById("audience").value;
+    const goal = document.getElementById("goal").value;
+    const duration = document.getElementById("duration").value;
+    const style = document.getElementById("style").value;
 
-    const platform=document.getElementById("platform").value;
+    const result = document.getElementById("result");
+    const button = document.getElementById("generateBtn");
 
-    const audience=document.getElementById("audience").value;
-
-    const goal=document.getElementById("goal").value;
-
-    const duration=document.getElementById("duration").value;
-
-    const style=document.getElementById("style").value;
-
-    const result=document.getElementById("result");
-
-    const button=document.getElementById("generateBtn");
-
-    if(theme==""){
-
+    if(theme === ""){
         alert("Entre un sujet.");
-
         return;
-
     }
 
-    button.disabled=true;
-
-    button.innerHTML="⏳ Génération...";
-
-    result.innerHTML="L'IA travaille...";
+    button.disabled = true;
+    button.innerHTML = "⏳ Génération...";
+    result.innerHTML = "<div class='loader'></div><p>Empire AI génère ton contenu...</p>";
 
     try{
 
-        const response=await fetch("/api/generate",{
-
+        const response = await fetch("/api/generate",{
             method:"POST",
-
-            headers:{
-                "Content-Type":"application/json"
-            },
-
+            headers:{ "Content-Type":"application/json" },
             body:JSON.stringify({
-
                 theme,
-
                 platform,
-
                 audience,
-
                 goal,
-
                 duration,
-
                 style,
-
                 mode:currentMode
-
             })
-
         });
 
-        const data=await response.json();
+        const data = await response.json();
 
         if(data.error){
-
-            result.innerHTML="❌ "+data.error;
-
+            result.innerHTML = "❌ " + data.error;
         }
-
         else{
 
-            if(currentMode==="planner"){
-
+            /* Mode Planificateur IA */
+            if(currentMode === "planner"){
                 try{
-
                     afficherCalendrier(JSON.parse(data.result));
-
                 }
-
                 catch{
-
-                    result.innerHTML="Le calendrier n'a pas pu être généré.";
-
+                    result.innerHTML = "Le calendrier n'a pas pu être généré.";
                 }
-
             }
 
+            /* Autres modes */
             else{
-
-                result.innerHTML=data.result;
-
+                result.innerHTML = data.result;
             }
-
         }
 
     }
-
     catch{
-
-        result.innerHTML="Impossible de contacter l'IA.";
-
+        result.innerHTML = "Impossible de contacter l'IA.";
     }
 
-    button.disabled=false;
+    button.disabled = false;
+    button.innerHTML = "🚀 Générer";
+}
 
-    button.innerHTML="🚀 Générer";
-
-}/* ========================================================= */
-/* CALENDRIER */
+/* ========================================================= */
+/* CALENDRIER IA */
 /* ========================================================= */
 
 function afficherCalendrier(calendrier){
 
-    const result=document.getElementById("result");
+    calendrierData = calendrier;
 
-    let html="";
+    const result = document.getElementById("result");
 
-    html+="<h2>📅 Calendrier de publication</h2>";
+    let html = "";
+    html += "<h2>📅 Calendrier de publication</h2>";
+    html += "<div class='calendar'>";
 
-    html+="<div class='calendar'>";
+    calendrier.forEach(jour => {
 
-    calendrier.forEach(jour=>{
-
-        html+=`
-
+        html += `
         <div class="day" onclick="ouvrirJour(${jour.jour})">
-
-            <h3>📅 Jour ${jour.jour}</h3>
-
-            <p class="titre">
-
-                ${jour.titre}
-
-            </p>
-
+            <h3>Jour ${jour.jour}</h3>
+            <p>${jour.titre}</p>
         </div>
-
         `;
-
     });
 
-    html+="</div>";
+    html += "</div>";
 
-    result.innerHTML=html;
-
+    result.innerHTML = html;
 }
 
 /* ========================================================= */
-/* OUVRIR UNE JOURNÉE */
+/* FENÊTRE DE DÉTAIL NOTION */
 /* ========================================================= */
 
-function ouvrirJour(jour){
+function ouvrirJour(jourNumero){
 
-    alert(
+    const popup = document.getElementById("dayPopup");
+    const titleEl = document.getElementById("popupTitle");
+    const videoTitleEl = document.getElementById("popupVideoTitle");
+    const hourEl = document.getElementById("popupHour");
+    const goalEl = document.getElementById("popupGoal");
 
-`📅 Jour ${jour}
+    const jourData = calendrierData.find(j => j.jour === jourNumero);
 
-Dans Empire AI V2.1 :
+    if(!jourData){
+        alert("Données introuvables pour ce jour.");
+        return;
+    }
 
-• Script complet
+    titleEl.textContent = `Jour ${jourData.jour}`;
+    videoTitleEl.textContent = jourData.titre || "Non défini";
+    hourEl.textContent = jourData.heure || "Non définie";
+    goalEl.textContent = jourData.objectif || "Non défini";
 
-• Hook
-
-• Description
-
-• Hashtags
-
-• Plans de caméra
-
-seront générés automatiquement.`
-
-    );
-
+    popup.style.display = "flex";
 }
+
+/* Fermer la popup */
+document.getElementById("popupCloseBtn").addEventListener("click",()=>{
+    document.getElementById("dayPopup").style.display="none";
+});
+
+/* Fermer en cliquant en dehors */
+document.getElementById("dayPopup").addEventListener("click",(e)=>{
+    if(e.target.id === "dayPopup"){
+        e.target.style.display = "none";
+    }
+});
 
 /* ========================================================= */
 /* COPIER */
 /* ========================================================= */
 
 document.getElementById("copyBtn").addEventListener("click",()=>{
-
     navigator.clipboard.writeText(
-
         document.getElementById("result").innerText
-
     );
-
     alert("Texte copié.");
-
 });
 
 /* ========================================================= */
@@ -213,9 +175,7 @@ document.getElementById("copyBtn").addEventListener("click",()=>{
 /* ========================================================= */
 
 document.getElementById("clearBtn").addEventListener("click",()=>{
-
-    document.getElementById("result").innerHTML="";
-
+    document.getElementById("result").innerHTML = "";
 });
 
 /* ========================================================= */
@@ -223,13 +183,22 @@ document.getElementById("clearBtn").addEventListener("click",()=>{
 /* ========================================================= */
 
 document.getElementById("theme").addEventListener("keydown",(e)=>{
-
-    if(e.key==="Enter"){
-
+    if(e.key === "Enter"){
         e.preventDefault();
-
         generate();
-
     }
-
 });
+
+/* ========================================================= */
+/* POPUP PAIEMENT */
+/* ========================================================= */
+
+function ouvrirPaiement(){
+    alert(
+        "Pour activer Empire AI Pro :\n\n" +
+        "💳 Envoie un virement Interac de 10$ à : paiement@empireai.ca\n" +
+        "Question : Empire\n" +
+        "Réponse : AI\n\n" +
+        "Ton accès sera activé manuellement."
+    );
+}
