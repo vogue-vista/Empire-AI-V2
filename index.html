@@ -14,10 +14,7 @@
 
 <div class="app">
 
-    <!-- ========================= -->
     <!-- SIDEBAR -->
-    <!-- ========================= -->
-
     <aside class="sidebar">
 
         <div class="logo">
@@ -26,8 +23,6 @@
         </div>
 
         <nav>
-
-            <!-- Modes conservés seulement -->
             <button class="menu active" data-mode="planner">
                 📅 Planificateur IA
             </button>
@@ -40,33 +35,27 @@
                 🔥 Analyse virale
             </button>
 
-            <!-- Paiement Interac -->
-            <button class="menu premium" onclick="ouvrirPaiement()">
+            <button class="menu premium" id="proBtn">
                 💳 Empire AI Pro
             </button>
-
         </nav>
 
     </aside>
 
-    <!-- ========================= -->
     <!-- CONTENU -->
-    <!-- ========================= -->
-
     <main class="content">
 
         <header class="header">
-            <div>
-                <h2>Créer un projet</h2>
-                <p>Remplis les informations puis laisse Empire AI créer ton contenu.</p>
-            </div>
+            <h2 id="headerTitle">Empire AI – Planificateur IA</h2>
+            <p class="subtitle" id="headerSubtitle">
+                Remplis les informations ci‑dessous et laisse Empire AI générer ton calendrier de contenu.
+            </p>
         </header>
 
-        <!-- ========================= -->
         <!-- FORMULAIRE -->
-        <!-- ========================= -->
-
         <section class="card">
+
+            <h3 class="section-title" id="formTitle">🎯 Paramètres du projet</h3>
 
             <div class="grid">
 
@@ -131,20 +120,23 @@
 
             </div>
 
-            <button id="generateBtn" class="generate" onclick="generate()">
+            <!-- Champ pour analyse virale -->
+            <div class="field" id="viralContentField" style="margin-top:20px; display:none;">
+                <label>Contenu à analyser</label>
+                <textarea id="viralContent" placeholder="Colle ici ton texte, ton script ou ton titre à analyser..."></textarea>
+            </div>
+
+            <button id="generateBtn" class="generate">
                 🚀 Générer
             </button>
 
         </section>
 
-        <!-- ========================= -->
-        <!-- RESULTAT -->
-        <!-- ========================= -->
-
+        <!-- RÉSULTAT -->
         <section class="result-card">
 
             <div class="result-header">
-                <h3>Résultat</h3>
+                <h3 id="resultTitle">📄 Résultat généré</h3>
 
                 <div>
                     <button id="copyBtn">📋 Copier</button>
@@ -161,23 +153,19 @@
 
         </section>
 
-        <!-- ========================= -->
         <!-- PLANIFICATEUR IA -->
-        <!-- ========================= -->
-
         <section class="planner">
-            <h3>📅 Planificateur IA</h3>
-            <p>Cette section affichera ton calendrier IA généré automatiquement.</p>
+            <h3>📅 Planificateur IA – 30 jours de contenu</h3>
+            <p class="subtitle">
+                Le calendrier apparaîtra ici après la génération IA (mode Planificateur IA).
+            </p>
         </section>
 
     </main>
 
 </div>
 
-<!-- ========================= -->
-<!-- POPUP DETAIL NOTION -->
-<!-- ========================= -->
-
+<!-- POPUP DÉTAIL JOUR -->
 <div id="dayPopup" class="popup" style="display:none;">
     <div class="popup-content">
         <h2 id="popupTitle">Jour 1</h2>
@@ -187,6 +175,35 @@
         <p><strong>Objectif :</strong> <span id="popupGoal"></span></p>
 
         <button id="popupCloseBtn">Fermer</button>
+    </div>
+</div>
+
+<!-- POPUP EMPIRE AI PRO -->
+<div id="proPopup" class="popup" style="display:none;">
+    <div class="popup-content">
+        <h2>Empire AI Pro</h2>
+
+        <p><strong>Ce que tu débloques :</strong></p>
+        <ul style="margin:10px 0 15px 18px; line-height:1.6;">
+            <li>Accès illimité aux générations</li>
+            <li>Planificateur IA 30 jours avancé</li>
+            <li>Analyse virale détaillée</li>
+            <li>Support prioritaire</li>
+        </ul>
+
+        <p><strong>Paiement :</strong></p>
+        <p>
+            Envoie un virement Interac de <strong>10$</strong> à :<br>
+            <strong>paiement@empireai.ca</strong><br>
+            Question : <strong>Empire</strong><br>
+            Réponse : <strong>AI</strong>
+        </p>
+
+        <p style="margin-top:10px;">
+            Ton accès sera activé manuellement après réception du paiement.
+        </p>
+
+        <button id="proCloseBtn">Fermer</button>
     </div>
 </div>
 
