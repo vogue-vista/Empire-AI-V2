@@ -138,10 +138,10 @@
             <div class="result-header">
                 <h3 id="resultTitle">📄 Résultat généré</h3>
 
-                <div>
-                    <button id="copyBtn">📋 Copier</button>
-                    <button id="clearBtn">🗑️ Effacer</button>
-                </div>
+            <div>
+                <button id="copyBtn">📋 Copier</button>
+                <button id="clearBtn">🗑️ Effacer</button>
+            </div>
             </div>
 
             <div id="result">
@@ -165,7 +165,7 @@
 
 </div>
 
-<!-- POPUP DÉTAIL JOUR -->
+<!-- POPUP JOUR -->
 <div id="dayPopup" class="popup" style="display:none;">
     <div class="popup-content">
         <h2 id="popupTitle">Jour 1</h2>
@@ -173,6 +173,10 @@
         <p><strong>Vidéo :</strong> <span id="popupVideoTitle"></span></p>
         <p><strong>Heure :</strong> <span id="popupHour"></span></p>
         <p><strong>Objectif :</strong> <span id="popupGoal"></span></p>
+
+        <button id="popupRegenerateBtn">🔄 Re‑générer ce jour</button>
+
+        <div id="popupGeneration" class="popup-generation"></div>
 
         <button id="popupCloseBtn">Fermer</button>
     </div>
