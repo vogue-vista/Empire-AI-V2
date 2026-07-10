@@ -55,47 +55,81 @@ Format attendu :
 ]
 
 Crée exactement 30 objets.
+
+Contexte :
 ${context}
 `;
                 break;
 
             case "complete":
                 prompt = `
-Tu es Empire AI.
+Tu es Empire AI, un assistant spécialisé dans la création de contenu.
 
+Contexte :
 ${context}
 
-Génère un pack complet :
-- 10 idées de vidéos
-- 20 titres
-- 20 hooks
-- Script complet
-- Plans de caméra
-- Description
-- Hashtags
-- Calendrier résumé 30 jours
+Prépare un pack complet :
+
+1. Dix idées de vidéos (titre + explication)
+2. Vingt titres très cliquables
+3. Vingt hooks très puissants
+4. Un script complet structuré :
+   - 🪝 Hook
+   - 🎬 Introduction
+   - 📖 Développement
+   - 🔥 Moment fort
+   - 🎯 Conclusion
+   - 📢 Appel à l'action
+5. Les plans de caméra
+6. Une description optimisée
+7. Une liste de hashtags
+8. Un calendrier résumé sur 30 jours (texte, pas JSON)
 
 Répond uniquement en français.
+Mets des titres clairs pour chaque section.
 `;
                 break;
 
             case "viral":
                 prompt = `
-Tu es un expert viral.
+Tu es un expert des contenus viraux sur ${platform}.
 
+Contexte :
 ${context}
 
-Contenu à analyser :
+Voici le contenu à analyser :
 ${contenu}
 
-Analyse :
-1. Potentiel viral
-2. Angles puissants
-3. Formats recommandés
-4. Erreurs à éviter
-5. Score sur 10
+Analyse le potentiel viral de ce contenu et propose :
+
+1. Une analyse détaillée (pourquoi ce contenu peut être viral ou non)
+2. Les angles de contenu les plus puissants
+3. Les formats recommandés (shorts, long format, série, etc.)
+4. Les erreurs à éviter
+5. Un score de viralité sur 10 avec explication
 
 Répond uniquement en français.
+`;
+                break;
+
+            case "single":
+                prompt = `
+Tu es Empire AI, un assistant spécialisé dans la création de contenu.
+
+Contexte :
+${context}
+
+Génère UNE SEULE idée complète de vidéo, avec la structure suivante :
+
+Titre :
+Hook :
+Description :
+Script complet :
+Plans de caméra :
+CTA :
+
+Répond uniquement en français.
+Mets des titres clairs pour chaque partie.
 `;
                 break;
 
@@ -103,9 +137,11 @@ Répond uniquement en français.
                 prompt = `
 Tu es Empire AI.
 
+Contexte :
 ${context}
 
-Génère un contenu utile.
+Génère un contenu utile en fonction de ces informations.
+Répond uniquement en français.
 `;
         }
 
@@ -122,8 +158,14 @@ Génère un contenu utile.
                     temperature: 0.7,
                     max_tokens: 3000,
                     messages: [
-                        { role: "system", content: "Tu es Empire AI." },
-                        { role: "user", content: prompt }
+                        {
+                            role: "system",
+                            content: "Tu es Empire AI, un assistant spécialisé dans la création de contenu."
+                        },
+                        {
+                            role: "user",
+                            content: prompt
+                        }
                     ]
                 })
             }
@@ -132,24 +174,35 @@ Génère un contenu utile.
         const data = await response.json();
 
         if (!response.ok) {
+            console.error(data);
             return NextResponse.json(
-                { error: data.error?.message || "Erreur API Groq." },
+                { error: data.error?.message || "Erreur de l'API." },
                 { status: response.status }
+            );
+        }
+
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            return NextResponse.json(
+                { error: "Réponse invalide de l'IA." },
+                { status: 500 }
             );
         }
 
         let result = data.choices[0].message.content;
 
         if (mode === "planner") {
+            result = result.trim();
             result = result.replace(/```json/g, "").replace(/```/g, "").trim();
         }
 
         return NextResponse.json({ result });
 
     } catch (error) {
+
         console.error(error);
+
         return NextResponse.json(
-            { error: "Erreur interne du serveur." },
+            { error: "Impossible de contacter l'IA." },
             { status: 500 }
         );
     }
