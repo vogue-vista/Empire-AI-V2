@@ -1,26 +1,63 @@
-/* ========================================================= */
-/* MODE ACTIF */
-/* ========================================================= */
-
 let currentMode = "planner";
 let calendrierData = [];
 
-/* Boutons du menu */
+/* BOUTONS MENU */
+
 const menuButtons = document.querySelectorAll(".menu");
+const generateBtn = document.getElementById("generateBtn");
 
 menuButtons.forEach(button => {
     button.addEventListener("click", () => {
+
+        if (!button.dataset.mode) return;
 
         menuButtons.forEach(btn => btn.classList.remove("active"));
         button.classList.add("active");
 
         currentMode = button.dataset.mode;
+        changerInterfaceMode(currentMode);
     });
 });
 
-/* ========================================================= */
+/* CHANGER INTERFACE SELON MODE */
+
+function changerInterfaceMode(mode){
+
+    const headerTitle = document.getElementById("headerTitle");
+    const headerSubtitle = document.getElementById("headerSubtitle");
+    const formTitle = document.getElementById("formTitle");
+    const resultTitle = document.getElementById("resultTitle");
+    const viralField = document.getElementById("viralContentField");
+
+    if(mode === "planner"){
+        headerTitle.textContent = "Empire AI – Planificateur IA";
+        headerSubtitle.textContent = "Remplis les informations ci‑dessous et laisse Empire AI générer ton calendrier de contenu.";
+        formTitle.textContent = "🎯 Paramètres du projet";
+        resultTitle.textContent = "📄 Résultat généré";
+        viralField.style.display = "none";
+        generateBtn.textContent = "🚀 Générer le calendrier";
+    }
+    else if(mode === "complete"){
+        headerTitle.textContent = "Empire AI – Génération complète";
+        headerSubtitle.textContent = "Empire AI va générer un pack complet : idées, titres, hooks, script, description, hashtags.";
+        formTitle.textContent = "🎯 Paramètres de la vidéo";
+        resultTitle.textContent = "📄 Pack complet généré";
+        viralField.style.display = "none";
+        generateBtn.textContent = "🚀 Générer le pack complet";
+    }
+    else if(mode === "viral"){
+        headerTitle.textContent = "Empire AI – Analyse virale";
+        headerSubtitle.textContent = "Colle ton texte, ton script ou ton titre pour analyser son potentiel viral.";
+        formTitle.textContent = "🔥 Analyse virale du contenu";
+        resultTitle.textContent = "📊 Analyse virale";
+        viralField.style.display = "block";
+        generateBtn.textContent = "🚀 Analyser la viralité";
+    }
+}
+
 /* GENERATION IA */
-/* ========================================================= */
+
+generateBtn.addEventListener("click", generate);
 
 async function generate(){
 
@@ -30,17 +67,22 @@ async function generate(){
     const goal = document.getElementById("goal").value;
     const duration = document.getElementById("duration").value;
     const style = document.getElementById("style").value;
+    const viralContent = document.getElementById("viralContent").value.trim();
 
     const result = document.getElementById("result");
-    const button = document.getElementById("generateBtn");
 
-    if(theme === ""){
+    if(currentMode !== "viral" && theme === ""){
         alert("Entre un sujet.");
         return;
     }
 
-    button.disabled = true;
-    button.innerHTML = "⏳ Génération...";
+    if(currentMode === "viral" && viralContent === ""){
+        alert("Colle un texte, un script ou un titre à analyser.");
+        return;
+    }
+
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = "⏳ Génération...";
     result.innerHTML = "<div class='loader'></div><p>Empire AI génère ton contenu...</p>";
 
     try{
@@ -55,7 +97,8 @@ async function generate(){
                 goal,
                 duration,
                 style,
-                mode:currentMode
+                mode:currentMode,
+                contenu:viralContent
             })
         });
 
@@ -66,7 +109,6 @@ async function generate(){
         }
         else{
 
-            /* Mode Planificateur IA */
             if(currentMode === "planner"){
                 try{
                     afficherCalendrier(JSON.parse(data.result));
@@ -75,8 +117,6 @@ async function generate(){
                     result.innerHTML = "Le calendrier n'a pas pu être généré.";
                 }
             }
-
-            /* Autres modes */
             else{
                 result.innerHTML = data.result;
             }
@@ -87,13 +127,11 @@ async function generate(){
         result.innerHTML = "Impossible de contacter l'IA.";
     }
 
-    button.disabled = false;
-    button.innerHTML = "🚀 Générer";
+    generateBtn.disabled = false;
+    changerInterfaceMode(currentMode);
 }
 
-/* ========================================================= */
-/* CALENDRIER IA */
-/* ========================================================= */
+/* CALENDRIER */
 
 function afficherCalendrier(calendrier){
 
@@ -120,9 +158,7 @@ function afficherCalendrier(calendrier){
     result.innerHTML = html;
 }
 
-/* ========================================================= */
-/* FENÊTRE DE DÉTAIL NOTION */
-/* ========================================================= */
+/* POPUP JOUR */
 
 function ouvrirJour(jourNumero){
 
@@ -147,21 +183,37 @@ function ouvrirJour(jourNumero){
     popup.style.display = "flex";
 }
 
-/* Fermer la popup */
 document.getElementById("popupCloseBtn").addEventListener("click",()=>{
     document.getElementById("dayPopup").style.display="none";
 });
 
-/* Fermer en cliquant en dehors */
 document.getElementById("dayPopup").addEventListener("click",(e)=>{
     if(e.target.id === "dayPopup"){
         e.target.style.display = "none";
     }
 });
 
-/* ========================================================= */
+/* POPUP PRO */
+
+const proBtn = document.getElementById("proBtn");
+const proPopup = document.getElementById("proPopup");
+const proCloseBtn = document.getElementById("proCloseBtn");
+
+proBtn.addEventListener("click",()=>{
+    proPopup.style.display = "flex";
+});
+
+proCloseBtn.addEventListener("click",()=>{
+    proPopup.style.display = "none";
+});
+
+proPopup.addEventListener("click",(e)=>{
+    if(e.target.id === "proPopup"){
+        e.target.style.display = "none";
+    }
+});
+
 /* COPIER */
-/* ========================================================= */
 
 document.getElementById("copyBtn").addEventListener("click",()=>{
     navigator.clipboard.writeText(
@@ -170,17 +222,13 @@ document.getElementById("copyBtn").addEventListener("click",()=>{
     alert("Texte copié.");
 });
 
-/* ========================================================= */
 /* EFFACER */
-/* ========================================================= */
 
 document.getElementById("clearBtn").addEventListener("click",()=>{
     document.getElementById("result").innerHTML = "";
 });
 
-/* ========================================================= */
-/* TOUCHE ENTRÉE */
-/* ========================================================= */
+/* ENTRÉE POUR GÉNÉRER */
 
 document.getElementById("theme").addEventListener("keydown",(e)=>{
     if(e.key === "Enter"){
@@ -189,16 +237,6 @@ document.getElementById("theme").addEventListener("keydown",(e)=>{
     }
 });
 
-/* ========================================================= */
-/* POPUP PAIEMENT */
-/* ========================================================= */
+/* INIT */
 
-function ouvrirPaiement(){
-    alert(
-        "Pour activer Empire AI Pro :\n\n" +
-        "💳 Envoie un virement Interac de 10$ à : paiement@empireai.ca\n" +
-        "Question : Empire\n" +
-        "Réponse : AI\n\n" +
-        "Ton accès sera activé manuellement."
-    );
-}
+changerInterfaceMode(currentMode);
