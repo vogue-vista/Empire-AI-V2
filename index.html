@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Empire AI V2</title>
+    <title>Empire AI – Planificateur IA</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -21,41 +21,28 @@
     <aside class="sidebar">
 
         <div class="logo">
-
             <h1>👑 Empire AI</h1>
-
-            <p>Version 2</p>
-
+            <p>Version 2.1</p>
         </div>
 
         <nav>
 
-            <button class="menu active" data-mode="ideas">
-                💡 Idées
-            </button>
-
-            <button class="menu" data-mode="script">
-                📝 Script
-            </button>
-
-            <button class="menu" data-mode="hook">
-                🪝 Hooks
-            </button>
-
-            <button class="menu" data-mode="title">
-                🎯 Titres
-            </button>
-
-            <button class="menu" data-mode="description">
-                📄 Description
-            </button>
-
-            <button class="menu" data-mode="planner">
+            <!-- Modes conservés seulement -->
+            <button class="menu active" data-mode="planner">
                 📅 Planificateur IA
             </button>
 
-            <button class="menu premium" data-mode="complete">
+            <button class="menu" data-mode="complete">
                 ⭐ Génération complète
+            </button>
+
+            <button class="menu" data-mode="viral">
+                🔥 Analyse virale
+            </button>
+
+            <!-- Paiement Interac -->
+            <button class="menu premium" onclick="ouvrirPaiement()">
+                💳 Empire AI Pro
             </button>
 
         </nav>
@@ -69,17 +56,10 @@
     <main class="content">
 
         <header class="header">
-
             <div>
-
                 <h2>Créer un projet</h2>
-
-                <p>
-                    Remplis les informations puis laisse Empire AI créer ton contenu.
-                </p>
-
+                <p>Remplis les informations puis laisse Empire AI créer ton contenu.</p>
             </div>
-
         </header>
 
         <!-- ========================= -->
@@ -91,122 +71,67 @@
             <div class="grid">
 
                 <div class="field">
-
                     <label>Sujet</label>
-
-                    <input
-                        id="theme"
-                        type="text"
-                        placeholder="Ex : Minecraft Hardcore"
-                    >
-
+                    <input id="theme" type="text" placeholder="Ex : Minecraft Hardcore">
                 </div>
 
                 <div class="field">
-
                     <label>Plateforme</label>
-
                     <select id="platform">
-
                         <option>YouTube</option>
-
                         <option>TikTok</option>
-
                         <option>Instagram</option>
-
                         <option>YouTube Shorts</option>
-
                     </select>
-
                 </div>
 
                 <div class="field">
-
                     <label>Public cible</label>
-
                     <select id="audience">
-
                         <option>8-12 ans</option>
-
                         <option selected>13-17 ans</option>
-
                         <option>18-24 ans</option>
-
                         <option>25-34 ans</option>
-
                         <option>35 ans et +</option>
-
                     </select>
-
                 </div>
 
                 <div class="field">
-
                     <label>Objectif</label>
-
                     <select id="goal">
-
                         <option>Plus de vues</option>
-
                         <option>Plus d'abonnés</option>
-
                         <option>Plus de commentaires</option>
-
                         <option>Plus de partages</option>
-
                         <option>Plus de ventes</option>
-
                     </select>
-
                 </div>
 
                 <div class="field">
-
                     <label>Durée</label>
-
                     <select id="duration">
-
                         <option>30 secondes</option>
-
                         <option>1 minute</option>
-
                         <option>5 minutes</option>
-
                         <option selected>10 minutes</option>
-
                         <option>20 minutes</option>
-
                     </select>
-
                 </div>
 
                 <div class="field">
-
                     <label>Style</label>
-
                     <select id="style">
-
                         <option>Divertissant</option>
-
                         <option>Professionnel</option>
-
                         <option>Éducatif</option>
-
                         <option>Motivant</option>
-
                         <option>Viral</option>
-
                     </select>
-
                 </div>
 
             </div>
 
-            <button
-                id="generateBtn"
-                class="generate"
-                onclick="generate()"
-            >
+            <button id="generateBtn" class="generate" onclick="generate()">
                 🚀 Générer
             </button>
 
@@ -219,71 +144,53 @@
         <section class="result-card">
 
             <div class="result-header">
-
                 <h3>Résultat</h3>
 
                 <div>
-
-                    <button id="copyBtn">
-                        📋 Copier
-                    </button>
-
-                    <button id="clearBtn">
-                        🗑️ Effacer
-                    </button>
-
+                    <button id="copyBtn">📋 Copier</button>
+                    <button id="clearBtn">🗑️ Effacer</button>
                 </div>
-
             </div>
 
             <div id="result">
-
                 <h2>👋 Bienvenue sur Empire AI</h2>
-
-                <p>
-
-                    Choisis un outil dans le menu de gauche.
-
-                </p>
-
-                <p>
-
-                    Remplis les informations.
-
-                </p>
-
-                <p>
-
-                    Clique sur <strong>🚀 Générer</strong>.
-
-                </p>
-
+                <p>Choisis un outil dans le menu de gauche.</p>
+                <p>Remplis les informations.</p>
+                <p>Clique sur <strong>🚀 Générer</strong>.</p>
             </div>
 
         </section>
 
         <!-- ========================= -->
-        <!-- PLANIFICATEUR -->
+        <!-- PLANIFICATEUR IA -->
         <!-- ========================= -->
 
         <section class="planner">
-
             <h3>📅 Planificateur IA</h3>
-
-            <p>
-
-                Cette section affichera bientôt un vrai calendrier interactif.
-
-            </p>
-
+            <p>Cette section affichera ton calendrier IA généré automatiquement.</p>
         </section>
 
     </main>
 
 </div>
 
+<!-- ========================= -->
+<!-- POPUP DETAIL NOTION -->
+<!-- ========================= -->
+
+<div id="dayPopup" class="popup" style="display:none;">
+    <div class="popup-content">
+        <h2 id="popupTitle">Jour 1</h2>
+
+        <p><strong>Vidéo :</strong> <span id="popupVideoTitle"></span></p>
+        <p><strong>Heure :</strong> <span id="popupHour"></span></p>
+        <p><strong>Objectif :</strong> <span id="popupGoal"></span></p>
+
+        <button id="popupCloseBtn">Fermer</button>
+    </div>
+</div>
+
 <script src="script.js"></script>
 
 </body>
-
 </html>
