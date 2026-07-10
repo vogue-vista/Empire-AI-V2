@@ -55,7 +55,7 @@ function changerInterfaceMode(mode){
     }
 }
 
-/* GENERATION IA */
+/* GENERATION IA PRINCIPALE */
 
 generateBtn.addEventListener("click", generate);
 
@@ -158,9 +158,7 @@ function afficherCalendrier(calendrier){
     result.innerHTML = html;
 }
 
-/* =============================== */
-/* OUVRIR JOUR — GÉNÉRATION COMPLÈTE */
-/* =============================== */
+/* OUVRIR JOUR — UNE SEULE IDÉE COMPLÈTE */
 
 async function ouvrirJour(jourNumero){
 
@@ -183,7 +181,7 @@ async function ouvrirJour(jourNumero){
     hourEl.textContent = jourData.heure || "Non définie";
     goalEl.textContent = jourData.objectif || "Non défini";
 
-    generationZone.innerHTML = "<div class='loader'></div><p>Empire AI génère le contenu du jour...</p>";
+    generationZone.innerHTML = "<div class='loader'></div><p>Empire AI génère l'idée du jour...</p>";
 
     const response = await fetch("/api/generate",{
         method:"POST",
@@ -195,18 +193,22 @@ async function ouvrirJour(jourNumero){
             goal: jourData.objectif,
             duration: "10 minutes",
             style: "Viral",
-            mode: "complete"
+            mode: "single"
         })
     });
 
     const data = await response.json();
 
-    generationZone.innerHTML = data.result;
+    if(data.error){
+        generationZone.innerHTML = "❌ " + data.error;
+    }else{
+        generationZone.innerHTML = data.result;
+    }
 
     popup.style.display = "flex";
 }
 
-/* RE-GÉNÉRER CE JOUR */
+/* RE-GÉNÉRER CE JOUR — UNE NOUVELLE IDÉE */
 
 document.getElementById("popupRegenerateBtn").addEventListener("click", async () => {
 
@@ -226,12 +228,17 @@ document.getElementById("popupRegenerateBtn").addEventListener("click", async ()
             goal: goal,
             duration: "10 minutes",
             style: "Viral",
-            mode: "complete"
+            mode: "single"
         })
     });
 
     const data = await response.json();
-    generationZone.innerHTML = data.result;
+
+    if(data.error){
+        generationZone.innerHTML = "❌ " + data.error;
+    }else{
+        generationZone.innerHTML = data.result;
+    }
 });
 
 /* POPUP JOUR */
