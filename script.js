@@ -158,15 +158,18 @@ function afficherCalendrier(calendrier){
     result.innerHTML = html;
 }
 
-/* POPUP JOUR */
+/* =============================== */
+/* OUVRIR JOUR — GÉNÉRATION COMPLÈTE */
+/* =============================== */
 
-function ouvrirJour(jourNumero){
+async function ouvrirJour(jourNumero){
 
     const popup = document.getElementById("dayPopup");
     const titleEl = document.getElementById("popupTitle");
     const videoTitleEl = document.getElementById("popupVideoTitle");
     const hourEl = document.getElementById("popupHour");
     const goalEl = document.getElementById("popupGoal");
+    const generationZone = document.getElementById("popupGeneration");
 
     const jourData = calendrierData.find(j => j.jour === jourNumero);
 
@@ -180,8 +183,58 @@ function ouvrirJour(jourNumero){
     hourEl.textContent = jourData.heure || "Non définie";
     goalEl.textContent = jourData.objectif || "Non défini";
 
+    generationZone.innerHTML = "<div class='loader'></div><p>Empire AI génère le contenu du jour...</p>";
+
+    const response = await fetch("/api/generate",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+            theme: jourData.titre,
+            platform: "YouTube",
+            audience: "13-17 ans",
+            goal: jourData.objectif,
+            duration: "10 minutes",
+            style: "Viral",
+            mode: "complete"
+        })
+    });
+
+    const data = await response.json();
+
+    generationZone.innerHTML = data.result;
+
     popup.style.display = "flex";
 }
+
+/* RE-GÉNÉRER CE JOUR */
+
+document.getElementById("popupRegenerateBtn").addEventListener("click", async () => {
+
+    const title = document.getElementById("popupVideoTitle").textContent;
+    const goal = document.getElementById("popupGoal").textContent;
+
+    const generationZone = document.getElementById("popupGeneration");
+    generationZone.innerHTML = "<div class='loader'></div><p>Empire AI génère une nouvelle idée...</p>";
+
+    const response = await fetch("/api/generate",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+            theme: title,
+            platform: "YouTube",
+            audience: "13-17 ans",
+            goal: goal,
+            duration: "10 minutes",
+            style: "Viral",
+            mode: "complete"
+        })
+    });
+
+    const data = await response.json();
+    generationZone.innerHTML = data.result;
+});
+
+/* POPUP JOUR */
 
 document.getElementById("popupCloseBtn").addEventListener("click",()=>{
     document.getElementById("dayPopup").style.display="none";
