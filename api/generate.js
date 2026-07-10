@@ -1,8 +1,5 @@
 export default async function handler(req, res) {
 
-    // =========================
-    // MÉTHODE HTTP
-    // =========================
     if (req.method !== "POST") {
         return res.status(405).json({
             error: "Méthode non autorisée."
@@ -10,9 +7,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        // =========================
-        // RÉCUPÉRATION DES DONNÉES
-        // =========================
+
         const {
             theme,
             platform,
@@ -20,17 +15,24 @@ export default async function handler(req, res) {
             goal,
             duration,
             style,
-            mode
+            mode,
+            contenu
         } = req.body;
 
-        if (!theme || theme.trim() === "") {
+        if (mode !== "viral" && (!theme || theme.trim() === "")) {
             return res.status(400).json({
                 error: "Le sujet est obligatoire."
             });
         }
 
+        if (mode === "viral" && (!contenu || contenu.trim() === "")) {
+            return res.status(400).json({
+                error: "Le contenu à analyser est obligatoire."
+            });
+        }
+
         const context = `
-Sujet : ${theme}
+Sujet : ${theme || "(non défini)"}
 Plateforme : ${platform}
 Public cible : ${audience}
 Objectif : ${goal}
@@ -38,16 +40,10 @@ Durée : ${duration}
 Style : ${style}
 `;
 
-        // =========================
-        // CONSTRUCTION DU PROMPT
-        // =========================
         let prompt = "";
 
         switch (mode) {
 
-            // -------------------------
-            // PLANIFICATEUR IA (JSON)
-            // -------------------------
             case "planner":
                 prompt = `
 Tu es une API.
@@ -77,9 +73,6 @@ Les objectifs doivent être variés (engagement, vues, abonnés, ventes, etc.).
 `;
                 break;
 
-            // -------------------------
-            // GÉNÉRATION COMPLÈTE
-            // -------------------------
             case "complete":
                 prompt = `
 Tu es Empire AI, un assistant spécialisé dans la création de contenu.
@@ -108,18 +101,18 @@ Mets des titres clairs pour chaque section.
 `;
                 break;
 
-            // -------------------------
-            // ANALYSE VIRALE
-            // -------------------------
             case "viral":
                 prompt = `
 Tu es un expert des contenus viraux sur ${platform}.
 
 ${context}
 
-Analyse le potentiel viral du sujet et propose :
+Voici le contenu à analyser :
+${contenu}
 
-1. Une analyse détaillée (pourquoi ce sujet peut être viral ou non)
+Analyse le potentiel viral de ce contenu et propose :
+
+1. Une analyse détaillée (pourquoi ce contenu peut être viral ou non)
 2. Les angles de contenu les plus puissants
 3. Les formats recommandés (shorts, long format, série, etc.)
 4. Les erreurs à éviter
@@ -129,9 +122,6 @@ Répond uniquement en français.
 `;
                 break;
 
-            // -------------------------
-            // PAR DÉFAUT
-            // -------------------------
             default:
                 prompt = `
 Tu es Empire AI.
@@ -143,9 +133,6 @@ Répond uniquement en français.
 `;
         }
 
-        // =========================
-        // APPEL À L'API GROQ
-        // =========================
         const response = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",
             {
@@ -174,9 +161,6 @@ Répond uniquement en français.
 
         const data = await response.json();
 
-        // =========================
-        // GESTION DES ERREURS API
-        // =========================
         if (!response.ok) {
             console.error(data);
             return res.status(response.status).json({
@@ -196,9 +180,6 @@ Répond uniquement en français.
 
         let result = data.choices[0].message.content;
 
-        // =========================
-        // NETTOYAGE JSON (PLANNER)
-        // =========================
         if (mode === "planner") {
 
             result = result.trim();
@@ -216,9 +197,6 @@ Répond uniquement en français.
             }
         }
 
-        // =========================
-        // RÉPONSE FINALE
-        // =========================
         return res.status(200).json({
             result
         });
