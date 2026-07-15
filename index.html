@@ -2,33 +2,30 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empire AI – Accès sécurisé</title>
-
-    <!-- CSS CORRECT -->
+    <title>Accès Empire AI</title>
     <link rel="stylesheet" href="lock.css">
 </head>
 
 <body>
 
-<div class="lock-container">
+    <!-- Script pour bypass si LOCK_ENABLED = false -->
+    <script>
+        const LOCK_ENABLED = false; // mettre true vendredi
+        if (!LOCK_ENABLED) {
+            window.location.href = "app.html";
+        }
+    </script>
 
-    <h1>🔐 Empire AI – Accès réservé</h1>
-    <p class="subtitle">Entrez votre code d’accès pour continuer</p>
+    <div class="lock-screen">
+        <h1>🔒 Accès Empire AI</h1>
+        <p>Entre ton code d'accès :</p>
 
-    <div class="card">
-        <label for="accessCode">Code d’accès</label>
-        <input type="text" id="accessCode" placeholder="Ex : EMPIRE-4921">
-
+        <input type="text" id="accessCode" placeholder="Code d'accès">
         <button id="unlockBtn">Déverrouiller</button>
 
         <p id="errorMsg" class="error"></p>
     </div>
 
-</div>
-
-<!-- JS CORRECT -->
-<script src="lock.js"></script>
-
+    <script src="lock.js"></script>
 </body>
 </html>
