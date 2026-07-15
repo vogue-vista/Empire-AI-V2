@@ -8,10 +8,10 @@
 
 <body>
 
-    <!-- Script pour bypass si LOCK_ENABLED = false -->
+    <!-- Toggle global du verrou -->
     <script>
-        const LOCK_ENABLED = false; // mettre true vendredi
-        if (!LOCK_ENABLED) {
+        window.LOCK_ENABLED = false; // mettre true vendredi
+        if (!window.LOCK_ENABLED) {
             window.location.href = "app.html";
         }
     </script>
