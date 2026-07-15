@@ -1,7 +1,7 @@
 // 🔒 Toggle du verrou (change juste TRUE/FALSE)
 // Aujourd'hui : false → accès ouvert
 // Vendredi : true → verrou activé
-const LOCK_ENABLED = false;
+const LOCK_ENABLED = true;
 
 const validCodes = [
     "EMPIRE-4921",
