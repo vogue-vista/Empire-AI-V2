@@ -1,14 +1,14 @@
 const validCodes = [
-    "EMPIRE-4921",
-    "EMPIRE-7730",
-    "EMPIRE-1189",
-    "EMPIRE-5502",
-    "EMPIRE-9044",
-    "EMPIRE-6617",
-    "EMPIRE-2208",
-    "EMPIRE-8893",
-    "EMPIRE-3470",
-    "EMPIRE-7156",
+    "EMPIRE-4444",
+    "EMPIRE-3333",
+    "EMPIRE-2222",
+    "EMPIRE-1111",
+    "EMPIRE-0000",
+    "EMPIRE-6789",
+    "EMPIRE-4567",
+    "EMPIRE-3456",
+    "EMPIRE-2345",
+    "EMPIRE-1234",
     "EMPIRE-5032"
 ];
 
