@@ -17,16 +17,48 @@ module.exports = async function handler(req, res) {
       contenu
     } = req.body || {};
 
-    const prompt = `
-Sujet : ${theme || ""}
-Plateforme : ${platform || ""}
-Public : ${audience || ""}
-Objectif : ${goal || ""}
-Durée : ${duration || ""}
-Style : ${style || ""}
-Mode : ${mode || ""}
-Contenu : ${contenu || ""}
+    let prompt = "";
+
+    switch (mode) {
+      case "planner":
+        prompt = `
+Crée un calendrier de contenu de 30 jours.
+
+Sujet : ${theme}
+Plateforme : ${platform}
+Public : ${audience}
+Objectif : ${goal}
+
+Réponds en JSON.
 `;
+        break;
+
+      case "viral":
+        prompt = `
+Analyse ce contenu :
+
+${contenu}
+
+Donne :
+- les points forts
+- les points faibles
+- une note sur 10
+- des améliorations
+`;
+        break;
+
+      default:
+        prompt = `
+Sujet : ${theme}
+Plateforme : ${platform}
+Public : ${audience}
+Objectif : ${goal}
+Durée : ${duration}
+Style : ${style}
+
+Crée du contenu complet et détaillé.
+`;
+    }
 
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
@@ -34,46 +66,4 @@ Contenu : ${contenu || ""}
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            {
-              role: "system",
-              content:
-                "Tu es Empire AI, un assistant spécialisé dans la création de contenu."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 1000
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("GROQ ERROR:", data);
-
-      return res.status(response.status).json({
-        error: data.error?.message || "Erreur Groq"
-      });
-    }
-
-    return res.status(200).json({
-      result: data.choices[0].message.content
-    });
-
-  } catch (error) {
-    console.error("ERROR:", error);
-
-    return res.status(500).json({
-      error: error.message
-    });
-  }
-};
+          "
