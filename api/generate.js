@@ -1,223 +1,149 @@
-catch (error) {
- 
-console.error(error);
- 
-return res.status(500).json({
-error: String(error),
-message: error?.message,
-stack: error?.stack
-});
-}
-
 export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Méthode non autorisée."
+    });
+  }
 
-    if (req.method !== "POST") {
-        return res.status(405).json({
-            error: "Méthode non autorisée."
-        });
-    }
+  try {
+    const {
+      theme,
+      platform,
+      audience,
+      goal,
+      duration,
+      style,
+      mode,
+      contenu
+    } = req.body;
 
-    try {
-
-        const {
-            theme,
-            platform,
-            audience,
-            goal,
-            duration,
-            style,
-            mode,
-            contenu
-        } = req.body;
-
-        if (mode !== "viral" && (!theme || theme.trim() === "")) {
-            return res.status(400).json({
-                error: "Le sujet est obligatoire."
-            });
-        }
-
-        if (mode === "viral" && (!contenu || contenu.trim() === "")) {
-            return res.status(400).json({
-                error: "Le contenu à analyser est obligatoire."
-            });
-        }
-
-        const context = `
+    const context = `
 Sujet : ${theme || "(non défini)"}
-Plateforme : ${platform}
-Public cible : ${audience}
-Objectif : ${goal}
-Durée : ${duration}
-Style : ${style}
+Plateforme : ${platform || ""}
+Public cible : ${audience || ""}
+Objectif : ${goal || ""}
+Durée : ${duration || ""}
+Style : ${style || ""}
 `;
 
-        let prompt = "";
+    let prompt = "";
 
-        switch (mode) {
-
-            case "planner":
-                prompt = `
+    switch (mode) {
+      case "planner":
+        prompt = `
 Tu es une API.
-Tu dois répondre UNIQUEMENT avec un JSON valide.
-Tu ne dois écrire AUCUNE explication.
-Tu ne dois PAS écrire de markdown.
-Tu ne dois PAS écrire de texte avant ou après.
 
-Format attendu :
+Réponds uniquement avec un JSON valide.
+
+Format :
+
 [
   {
     "jour": 1,
-    "titre": "Titre de la vidéo",
+    "titre": "Titre",
     "heure": "18:00",
-    "objectif": "Objectif du jour"
+    "objectif": "Objectif"
   }
 ]
 
 Crée exactement 30 objets.
-Chaque objet représente une journée.
-
-Les titres doivent être variés et cohérents avec :
-${context}
-
-Les heures doivent être au format HH:MM (ex : "18:00").
-Les objectifs doivent être variés (engagement, vues, abonnés, ventes, etc.).
-`;
-                break;
-
-            case "complete":
-                prompt = `
-Tu es Empire AI, un assistant spécialisé dans la création de contenu.
 
 ${context}
-
-Prépare un pack complet :
-
-1. Dix idées de vidéos (titre + explication)
-2. Vingt titres très cliquables
-3. Vingt hooks très puissants
-4. Un script complet structuré :
-   - 🪝 Hook
-   - 🎬 Introduction
-   - 📖 Développement
-   - 🔥 Moment fort
-   - 🎯 Conclusion
-   - 📢 Appel à l'action
-5. Les plans de caméra
-6. Une description optimisée
-7. Une liste de hashtags
-8. Un calendrier résumé sur 30 jours (texte, pas JSON)
-
-Répond uniquement en français.
-Mets des titres clairs pour chaque section.
 `;
-                break;
+        break;
 
-            case "viral":
-                prompt = `
-Tu es un expert des contenus viraux sur ${platform}.
-
-${context}
-
-Voici le contenu à analyser :
-${contenu}
-
-Analyse le potentiel viral de ce contenu et propose :
-
-1. Une analyse détaillée (pourquoi ce contenu peut être viral ou non)
-2. Les angles de contenu les plus puissants
-3. Les formats recommandés (shorts, long format, série, etc.)
-4. Les erreurs à éviter
-5. Un score de viralité sur 10 avec explication
-
-Répond uniquement en français.
-`;
-                break;
-
-            default:
-                prompt = `
+      case "complete":
+        prompt = `
 Tu es Empire AI.
 
 ${context}
 
-Génère un contenu utile en fonction de ces informations.
-Répond uniquement en français.
+Prépare :
+
+1. 10 idées de vidéos
+2. 20 titres
+3. 20 hooks
+4. Un script complet
+5. Les plans caméra
+6. Une description
+7. Des hashtags
+8. Un calendrier sur 30 jours
+
+Réponds en français.
 `;
-        }
+        break;
 
-        const response = await fetch(
-            "https://api.groq.com/openai/v1/chat/completions",
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    temperature: 0.7,
-                    max_tokens: 3000,
-                    messages: [
-                        {
-                            role: "system",
-                            content: "Tu es Empire AI, un assistant spécialisé dans la création de contenu."
-                        },
-                        {
-                            role: "user",
-                            content: prompt
-                        }
-                    ]
-                })
-            }
-        );
+      case "viral":
+        prompt = `
+Tu es un expert du contenu viral.
 
-        const data = await response.json();
+${context}
 
-        if (!response.ok) {
-            console.error(data);
-            return res.status(response.status).json({
-                error: data.error?.message || "Erreur de l'API."
-            });
-        }
+Contenu :
 
-        if (
-            !data.choices ||
-            !data.choices[0] ||
-            !data.choices[0].message
-        ) {
-            return res.status(500).json({
-                error: "Réponse invalide de l'IA."
-            });
-        }
+${contenu}
 
-        let result = data.choices[0].message.content;
+Analyse :
+- Forces
+- Faiblesses
+- Score sur 10
+- Améliorations
+`;
+        break;
 
-        if (mode === "planner") {
+      default:
+        prompt = `
+${context}
 
-            result = result.trim();
-
-            if (result.startsWith("```json")) {
-                result = result
-                    .replace("```json", "")
-                    .replace("```", "")
-                    .trim();
-            }
-            else if (result.startsWith("```")) {
-                result = result
-                    .replace(/```/g, "")
-                    .trim();
-            }
-        }
-
-        return res.status(200).json({
-            result
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        return res.status(500).json({
-            error: "Impossible de contacter l'IA."
-        });
+Génère du contenu utile.
+`;
     }
+
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          temperature: 0.7,
+          max_tokens: 3000,
+          messages: [
+            {
+              role: "system",
+              content:
+                "Tu es Empire AI, expert en création de contenu."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ]
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("GROQ ERROR :", data);
+
+      return res.status(response.status).json({
+        error: data.error?.message || "Erreur Groq"
+      });
+    }
+
+    return res.status(200).json({
+      result: data.choices?.[0]?.message?.content || ""
+    });
+  } catch (error) {
+    console.error("ERROR :", error);
+
+    return res.status(500).json({
+      error: error.message || "Impossible de contacter l'IA"
+    });
+  }
 }
