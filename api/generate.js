@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Méthode non autorisée."
@@ -15,80 +15,65 @@ export default async function handler(req, res) {
       style,
       mode,
       contenu
-    } = req.body;
+    } = req.body || {};
 
-    if (mode !== "viral" && (!theme || theme.trim() === "")) {
-      return res.status(400).json({
-        error: "Le sujet est obligatoire."
-      });
-    }
-
-    if (mode === "viral" && (!contenu || contenu.trim() === "")) {
-      return res.status(400).json({
-        error: "Le contenu à analyser est obligatoire."
-      });
-    }
-
-    const context = `
-Sujet : ${theme || "(non défini)"}
+    const prompt = `
+Sujet : ${theme || ""}
 Plateforme : ${platform || ""}
-Public cible : ${audience || ""}
+Public : ${audience || ""}
 Objectif : ${goal || ""}
 Durée : ${duration || ""}
 Style : ${style || ""}
+Mode : ${mode || ""}
+Contenu : ${contenu || ""}
 `;
 
-    let prompt = "";
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content:
+                "Tu es Empire AI, un assistant spécialisé dans la création de contenu."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1000
+        })
+      }
+    );
 
-    switch (mode) {
-      case "planner":
-        prompt = `
-Tu es une API.
+    const data = await response.json();
 
-Réponds uniquement avec un JSON valide.
+    if (!response.ok) {
+      console.error("GROQ ERROR:", data);
 
-Format attendu :
+      return res.status(response.status).json({
+        error: data.error?.message || "Erreur Groq"
+      });
+    }
 
-[
-  {
-    "jour": 1,
-    "titre": "Titre de la vidéo",
-    "heure": "18:00",
-    "objectif": "Objectif du jour"
+    return res.status(200).json({
+      result: data.choices[0].message.content
+    });
+
+  } catch (error) {
+    console.error("ERROR:", error);
+
+    return res.status(500).json({
+      error: error.message
+    });
   }
-]
-
-Crée exactement 30 objets.
-
-${context}
-`;
-        break;
-
-      case "complete":
-        prompt = `
-Tu es Empire AI.
-
-${context}
-
-Prépare :
-
-1. 10 idées de vidéos
-2. 20 titres accrocheurs
-3. 20 hooks puissants
-4. Un script complet
-5. Les plans caméra
-6. Une description optimisée
-7. Une liste de hashtags
-8. Un calendrier sur 30 jours
-
-Réponds uniquement en français.
-`;
-        break;
-
-      case "viral":
-        prompt = `
-Tu es un expert du contenu viral.
-
-${context}
-
-Contenu
+};
