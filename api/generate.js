@@ -1,3 +1,6 @@
+return res.status(200).json({
+test: "VERSION TEST 123"
+});
 export default async function handler(req, res) {
 
     if (req.method !== "POST") {
