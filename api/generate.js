@@ -1,6 +1,8 @@
-return res.status(200).json({
-test: "VERSION TEST 123"
+catch (error) {
+return res.status(500).json({
+error: JSON.stringify(error, null, 2)
 });
+}
 export default async function handler(req, res) {
 
     if (req.method !== "POST") {
