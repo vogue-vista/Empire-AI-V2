@@ -1,8 +1,14 @@
 catch (error) {
+ 
+console.error(error);
+ 
 return res.status(500).json({
-error: JSON.stringify(error, null, 2)
+error: String(error),
+message: error?.message,
+stack: error?.stack
 });
 }
+
 export default async function handler(req, res) {
 
     if (req.method !== "POST") {
